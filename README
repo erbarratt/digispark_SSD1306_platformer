@@ -1,0 +1,4 @@
+Build target as shell script:
+    pio run -t upload
+
+Install micronucleus...?
