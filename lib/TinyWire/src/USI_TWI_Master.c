@@ -14,13 +14,10 @@
 *		Extensively modified to provide complete I2C driver.
 *
 *Notes:
-*		- T4_TWI and T2_TWI delays are modified to work with 1MHz
-default clock *			and now use hard code values. They would need to
-change *			for other clock rates. Refer to the Apps Note.
+*		- T4_TWI and T2_TWI delays are modified to work with 1MHz default clock * and now use hard code values. They would need to change *			for other clock rates. Refer to the Apps Note.
 *
 *	12/17/08	Added USI_TWI_Start_Memory_Read Routine		-jkl
-*		Note msg buffer will have slave adrs ( with write bit set) and
-memory adrs;
+*		Note msg buffer will have slave adrs ( with write bit set) and memory adrs;
 *			length should be these two bytes plus the number of
 bytes to read.
 ****************************************************************************/
@@ -42,43 +39,40 @@ unsigned char USI_TWI_Master_Start(void);
 /*!
  * @brief Stores the state of the USI_TWI
  */
-union USI_TWI_state {
-  unsigned char errorState; //!< Can reuse the TWI_state for error states since
-                            //!< it will not be needed if there is an error.
-  /*!
-   * @brief Struct that stores the modes for the device
-   */
-  struct {
-    unsigned char addressMode : 1;         //!< Address mode
-    unsigned char masterWriteDataMode : 1; //!< Write data mode
-    unsigned char memReadMode : 1;         //!< Read memory mode
-    unsigned char unused : 5;              //!< Unused
-  };
-} USI_TWI_state; //!< USI_TWI_state The state of the USI_TWI
+	union USI_TWI_state {
+		unsigned char errorState; //!< Can reuse the TWI_state for error states since
+							//!< it will not be needed if there is an error.
+		/*!
+		* @brief Struct that stores the modes for the device
+		*/
+		struct {
+			unsigned char addressMode : 1;         //!< Address mode
+			unsigned char masterWriteDataMode : 1; //!< Write data mode
+			unsigned char memReadMode : 1;         //!< Read memory mode
+			unsigned char unused : 5;              //!< Unused
+		};
+	} USI_TWI_state; //!< USI_TWI_state The state of the USI_TWI
 
 /*!
  * @brief USI TWI single master initialization function
  */
 void USI_TWI_Master_Initialise(void) {
-  PORT_USI |=
-      (1
-       << PIN_USI_SDA); // Enable pullup on SDA, to set high as released state.
-  PORT_USI |=
-      (1
-       << PIN_USI_SCL); // Enable pullup on SCL, to set high as released state.
 
-  DDR_USI |= (1 << PIN_USI_SCL); // Enable SCL as output.
-  DDR_USI |= (1 << PIN_USI_SDA); // Enable SDA as output.
+	PORT_USI |= (1 << PIN_USI_SDA); 						// Enable pullup on SDA, to set high as released state.
+	PORT_USI |= (1 << PIN_USI_SCL); 						// Enable pullup on SCL, to set high as released state.
 
-  USIDR = 0xFF; // Preload dataregister with "released level" data.
-  USICR = (0 << USISIE) | (0 << USIOIE) | // Disable Interrupts.
-          (1 << USIWM1) | (0 << USIWM0) | // Set USI in Two-wire mode.
-          (1 << USICS1) | (0 << USICS0) |
-          (1 << USICLK) | // Software stobe as counter clock source
-          (0 << USITC);
-  USISR = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) |
-          (1 << USIDC) |    // Clear flags,
-          (0x0 << USICNT0); // and reset counter.
+	DDR_USI |= (1 << PIN_USI_SCL); 							// Enable SCL as output.
+	DDR_USI |= (1 << PIN_USI_SDA); 							// Enable SDA as output.
+
+	USIDR = 0xFF; 											// Preload dataregister with "released level" data.
+	USICR = (0 << USISIE) | (0 << USIOIE) | 				// Disable Interrupts.
+		  (1 << USIWM1) | (0 << USIWM0) | 					// Set USI in Two-wire mode.
+		  (1 << USICS1) | (0 << USICS0) |
+		  (1 << USICLK) | 									// Software stobe as counter clock source
+		  (0 << USITC);
+	USISR = (1 << USISIF) | (1 << USIOIF) | (1 << USIPF) |
+		  (1 << USIDC) |    								// Clear flags,
+		  (0x0 << USICNT0); 								// and reset counter.
 }
 
 /*!

@@ -1,5 +1,5 @@
 /*
-  SSD1306_minimal.cpp - SSD1306 OLED Driver Library
+  SSD1306_minimal.c - SSD1306 OLED Driver Library
 
   Copyright (c) 2012, Adafruit Industries. All rights reserved.
   Copyright (c) 2012 GOF Electronics Co. Ltd ( http://www.geekonfire.com )
@@ -15,7 +15,7 @@
       products from CoPiino Electronics!
 
       What is it?
-        This library is derived from GOFi2cOLED library, only for SSD1306 in I2C Mode.
+        This library is derived from SSD1306OLED library, only for SSD1306 in I2C Mode.
         As the original library only supports Frame Buffered mode which requires to have
         at least 1024bytes of free RAM for a 128x64px display it is too big for smaller devices.
 
@@ -300,20 +300,20 @@ unsigned char getFlash( const unsigned char * mem, unsigned int idx  ){
 
 void sendCommand(unsigned char command)
 {
-  tw_begin();                       //initialize I2C
-  tw_beginTransmission(SlaveAddress); // begin I2C communication
+  tw_begin();                       		//initialize I2C
+  tw_beginTransmission(SlaveAddress); 		// begin I2C communication
 
-  tw_write(GOFi2cOLED_Command_Mode);	     // Set OLED Command mode
+  tw_write(SSD1306OLED_Command_Mode);	     // Set OLED Command mode
   tw_write(command);
 
-  tw_endTransmission(1);    		     // End I2C communication
+  tw_endTransmission(1);    		     	// End I2C communication
 }
 
 void sendData(unsigned char Data)
 {
   tw_begin();                    //initialize I2C
   tw_beginTransmission(SlaveAddress); // begin I2C transmission
-  tw_write(GOFi2cOLED_Data_Mode);            // data mode
+  tw_write(SSD1306OLED_Data_Mode);            // data mode
   tw_write(Data);
   tw_endTransmission(1);                    // stop I2C transmission
 }
@@ -321,84 +321,84 @@ void sendData(unsigned char Data)
 void init(uint8_t address)
 {
 
- tw_begin();
+	tw_begin();
 
- //delay(5);	//wait for OLED hardware init
-// constructor(128, 64);
- //SlaveAddress = address;
+	//delay(5);	//wait for OLED hardware init
+	// constructor(128, 64);
+	//SlaveAddress = address;
 
- sendCommand(GOFi2cOLED_Display_Off_Cmd);    /*display off*/
+	sendCommand(SSD1306OLED_Display_Off_Cmd);    				/*display off*/
 
- sendCommand(Set_Multiplex_Ratio_Cmd);    /*multiplex ratio*/
- sendCommand(0x3F);    /*duty = 1/64*/
+	sendCommand(Set_Multiplex_Ratio_Cmd);    					/*multiplex ratio*/
+	sendCommand(0x3F);    										/*duty = 1/64*/
 
- sendCommand(Set_Display_Offset_Cmd);    /*set display offset*/
- sendCommand(0x00);
-
-
-    sendCommand(Set_Memory_Addressing_Mode_Cmd); 	//set addressing mode
-    sendCommand(HORIZONTAL_MODE); 			//set horizontal addressing mode
-
- sendCommand(0xB0); 			//set page address
- sendCommand(0x00); 	//set column lower address
- sendCommand(0x10); 	//set column higher address
+	sendCommand(Set_Display_Offset_Cmd);    					/*set display offset*/
+	sendCommand(0x00);
 
 
+	sendCommand(Set_Memory_Addressing_Mode_Cmd); 				//set addressing mode
+	sendCommand(HORIZONTAL_MODE); 								//set horizontal addressing mode
 
- sendCommand(0x40);    /*set display starconstructort line*/
+	sendCommand(0xB0); 										//set page address
+	sendCommand(0x00); 										//set column lower address
+	sendCommand(0x10); 										//set column higher address
 
- sendCommand(Set_Contrast_Cmd);    /*contract control*/
- sendCommand(0xcf);    /*128*/
 
- sendCommand(Segment_Remap_Cmd);    /*set segment remap*/
 
- sendCommand(COM_Output_Remap_Scan_Cmd);    /*Com scan direction*/
+	sendCommand(0x40);    										/*set display starconstructort line*/
 
- sendCommand(GOFi2cOLED_Normal_Display_Cmd);    /*normal / reverse*/
+	sendCommand(Set_Contrast_Cmd);    							/*contract control*/
+	sendCommand(0xcf);    										/*128*/
 
- sendCommand(Set_Display_Clock_Divide_Ratio_Cmd);    /*set osc division*/
- sendCommand(0x80);
+	sendCommand(Segment_Remap_Cmd);   						 	/*set segment remap*/
 
- sendCommand(Set_Precharge_Period_Cmd);    /*set pre-charge period*/
- sendCommand(0xf1);
+	sendCommand(COM_Output_Remap_Scan_Cmd);    				/*Com scan direction*/
 
- sendCommand(Set_COM_Pins_Hardware_Config_Cmd);    /*set COM pins*/
- sendCommand(0x12);
+	sendCommand(SSD1306OLED_Normal_Display_Cmd);    			/*normal / reverse*/
 
- sendCommand(Set_VCOMH_Deselect_Level_Cmd);    /*set vcomh*/
- sendCommand(0x30);
+	sendCommand(Set_Display_Clock_Divide_Ratio_Cmd);    		/*set osc division*/
+	sendCommand(0x80);
 
- sendCommand(Deactivate_Scroll_Cmd);
+	sendCommand(Set_Precharge_Period_Cmd);    					/*set pre-charge period*/
+	sendCommand(0xf1);
 
- sendCommand(Charge_Pump_Setting_Cmd);    /*set charge pump enable*/
- sendCommand(Charge_Pump_Enable_Cmd);
+	sendCommand(Set_COM_Pins_Hardware_Config_Cmd);    			/*set COM pins*/
+	sendCommand(0x12);
 
- sendCommand(GOFi2cOLED_Display_On_Cmd);    /*display ON*/
+	sendCommand(Set_VCOMH_Deselect_Level_Cmd);    				/*set vcomh*/
+	sendCommand(0x30);
+
+	sendCommand(Deactivate_Scroll_Cmd);
+
+	sendCommand(Charge_Pump_Setting_Cmd);    					/*set charge pump enable*/
+	sendCommand(Charge_Pump_Enable_Cmd);
+
+	sendCommand(SSD1306OLED_Display_On_Cmd);    				/*display ON*/
 }
 
 void clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h){
 
-  tw_begin();                    //initialize I2C
-  tw_beginTransmission(SlaveAddress); // begin I2C transmission
-  tw_write(GOFi2cOLED_Command_Mode);            // data mode
-  tw_write(Set_Column_Address_Cmd);
-  tw_write(0);
+	tw_begin();                    						//initialize I2C
+	tw_beginTransmission(SlaveAddress); 				// begin I2C transmission
+	tw_write(SSD1306OLED_Command_Mode);            		// data mode
+	tw_write(Set_Column_Address_Cmd);
+	tw_write(0);
 
-  tw_write(col);
-  tw_write(col+w-1);
+	tw_write(col);
+	tw_write(col+w-1);
 
-  tw_endTransmission(1);                    // stop I2C transmission
+	tw_endTransmission(1);                    			// stop I2C transmission
 
-  tw_begin();                    //initialize I2C
-  tw_beginTransmission(SlaveAddress); // begin I2C transmission
-  tw_write(GOFi2cOLED_Command_Mode);            // data mode
-  tw_write(Set_Page_Address_Cmd);
-  tw_write(0);
+	tw_begin();                    						//initialize I2C
+	tw_beginTransmission(SlaveAddress); 				// begin I2C transmission
+	tw_write(SSD1306OLED_Command_Mode);            		// data mode
+	tw_write(Set_Page_Address_Cmd);
+	tw_write(0);
 
-  tw_write(row);
-  tw_write(row+h-1);
+	tw_write(row);
+	tw_write(row+h-1);
 
-  tw_endTransmission(1);                    // stop I2C transmission
+	tw_endTransmission(1);                    			// stop I2C transmission
 
 }
 
@@ -416,22 +416,22 @@ void startScreen(){
 
 void clear() {
 
-  sendCommand(0x00 | 0x0);  // low col = 0
-  sendCommand(0x10 | 0x0);  // hi col = 0
-  sendCommand(0x40 | 0x0); // line #0
+	sendCommand(0x00 | 0x0);  // low col = 0
+	sendCommand(0x10 | 0x0);  // hi col = 0
+	sendCommand(0x40 | 0x0); // line #0
 
-  clipArea(0,0,128,8);
+	clipArea(0,0,128,8);
 
-    for (uint16_t i=0; i<=((128*64/8)/16); i++)
-    {
-      // send a bunch of data in one xmission
-      tw_beginTransmission(SlaveAddress);
-      tw_write(GOFi2cOLED_Data_Mode);            // data mode
-      for (uint8_t k=0;k<16;k++){
-        tw_write( 0 );
-      }
-      tw_endTransmission(1);
-    }
+	for (uint16_t i=0; i<=((128*64/8)/16); i++){
+		// send a bunch of data in one xmission
+		tw_beginTransmission(SlaveAddress);
+		tw_write(SSD1306OLED_Data_Mode);            // data mode
+		for (uint8_t k=0;k<16;k++){
+			tw_write( 0 );
+		}
+		tw_endTransmission(1);
+	}
+
 }
 
 
@@ -444,7 +444,7 @@ void displayX(int off) {
     {
       // send a bunch of data in one xmission
       tw_beginTransmission(SlaveAddress);
-      tw_write(GOFi2cOLED_Data_Mode);            // data mode
+      tw_write(SSD1306OLED_Data_Mode);            // data mode
       for (uint8_t k=0;k<16;k++){
         tw_write((uint8_t) i*16 + k + off);
       }
@@ -466,7 +466,7 @@ void printChar( unsigned char ch ){
     data[4]= getFlash(BasicFont, i*5 + 4);
 
     tw_beginTransmission(SlaveAddress);
-    tw_write(GOFi2cOLED_Data_Mode);            // data mode
+    tw_write(SSD1306OLED_Data_Mode);            // data mode
 
     tw_write( 0x00 );
     tw_write( data[0] );
@@ -501,7 +501,7 @@ void drawImage( const unsigned char * img, unsigned char col, unsigned char row,
       data= getFlash( img, i);
 
       tw_beginTransmission(SlaveAddress);
-     tw_write(GOFi2cOLED_Data_Mode);            // data mode
+     tw_write(SSD1306OLED_Data_Mode);            // data mode
 
       tw_write((uint8_t) data );
       tw_endTransmission(1);

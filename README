@@ -1,4 +1,16 @@
+Install PlatformIO
+Install shell commands
+Install PlatformIO Clion plugin
+Select platformio executable in CLion
+
+In CLion run Tools > pio > run init
+
 Build target as shell script:
     pio run -t upload
 
 Install micronucleus...?
+    git clone https://github.com/micronucleus/micronucleus.git
+cd micronucleus/commandline
+sudo apt install libusb-dev
+make
+sudo make install

@@ -51,6 +51,7 @@
 	#include <stdint.h>
 	#include <stddef.h>
 	#include <stdbool.h>
+	#include "USI_TWI_Master.h"
 
 	#define USI_SEND 0      //!< indicates sending to TWI
 	#define USI_RCVE 1      //!< indicates receiving from TWI
