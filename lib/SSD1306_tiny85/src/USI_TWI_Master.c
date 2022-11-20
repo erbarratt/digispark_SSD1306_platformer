@@ -93,12 +93,11 @@ void USI_TWI_Master_Initialise()
 		PORT_USI &= ~(1 << PIN_USI_SCL); // Pull SCL LOW.
 		PORT_USI |= (1 << PIN_USI_SDA);  // Release SDA.
 
-		#ifdef SIGNAL_VERIFY
-			if(!(USISR & (1 << USISIF))){
-				USI_TWI_state.errorState = USI_TWI_MISSING_START_CON;
-				return (FALSE);
-			}
-		#endif
+		if(!(USISR & (1 << USISIF))){
+			USI_TWI_state.errorState = USI_TWI_MISSING_START_CON;
+			return (FALSE);
+		}
+
 		return (TRUE);
 	}
 
@@ -266,7 +265,8 @@ void USI_TWI_Master_Initialise()
 		USI_TWI_state.addressMode = TRUE; // Always true for first byte
 
 		/*Write address and Read/Write data */
-		do{
+		while(msgSize > 0) // Until all data sent/received.
+		{
 
 			/* If masterWrite cycle (or initial address tranmission)*/
 			if(USI_TWI_state.addressMode || USI_TWI_state.masterWriteDataMode){
@@ -331,12 +331,17 @@ void USI_TWI_Master_Initialise()
 				USI_TWI_Master_Transfer(tempUSISR_1bit); // Generate ACK/NACK.
 
 			}
-		} while(--msgSize); // Until all data sent/received.
+
+			msgSize--;
+
+		}
 
 		// usually a stop condition is sent here, but TinyWireM needs to choose
 		// whether or not to send it
 
 		/* Transmission successfully completed*/
+
+		USI_TWI_Master_Stop();
 		return (TRUE);
 
 	}
@@ -355,13 +360,13 @@ void USI_TWI_Master_Initialise()
  * @param msgSize How much to read from the buffer
  * @return Returns the message read
  */
-unsigned char USI_TWI_Start_Random_Read(unsigned char *msg, unsigned char msgSize)
-{
-	*(msg) &= ~(TRUE << TWI_READ_BIT); // OLED_clear the read bit if it's set
-	USI_TWI_state.errorState = 0;
-	USI_TWI_state.memReadMode = TRUE;
-	return (USI_TWI_Start_Transceiver_With_Data(msg, msgSize));
-}
+//unsigned char USI_TWI_Start_Random_Read(unsigned char *msg, unsigned char msgSize)
+//{
+//	*(msg) &= ~(TRUE << TWI_READ_BIT); // OLED_clear the read bit if it's set
+//	USI_TWI_state.errorState = 0;
+//	USI_TWI_state.memReadMode = TRUE;
+//	return (USI_TWI_Start_Transceiver_With_Data(msg, msgSize));
+//}
 
 /**
  * @brief USI Normal Read / Write Function
@@ -378,8 +383,8 @@ unsigned char USI_TWI_Start_Random_Read(unsigned char *msg, unsigned char msgSiz
  * @param msgSize The size of the message
  * @return Returns the data read
  */
-	unsigned char USI_TWI_Start_Read_Write(unsigned char *msg, unsigned char msgSize)
-	{
-		USI_TWI_state.errorState = 0; // Clears all mode bits also
-		return (USI_TWI_Start_Transceiver_With_Data(msg, msgSize));
-	}
+	//unsigned char USI_TWI_Start_Read_Write(unsigned char *msg, unsigned char msgSize)
+	//{
+	//	USI_TWI_state.errorState = 0; // Clears all mode bits also
+	//	return (USI_TWI_Start_Transceiver_With_Data(msg, msgSize));
+	//}

@@ -11,7 +11,7 @@
 
 #include "SSD1306.h"
 
-const uint8_t digital_font5x7[] PROGMEM =
+const unsigned char digital_font5x7[] PROGMEM =
  {
      0x00, 0x05, 0x07, 0x20,
      0x00, 0x00, 0x00, 0x00, 0x00, // char ' ' (0x20/32)
@@ -507,7 +507,7 @@ void OLED_clear() {
 		// send a bunch of data in one xmission
 		tw_setAddress(SlaveAddress);
 		tw_write(SSD1306_Data_Mode);            // data mode
-		for (uint8_t k=0;k<16;k++){
+		for (unsigned char k=0;k<16;k++){
 			tw_write( 0 );
 		}
 		tw_doTransmission(1);
@@ -525,8 +525,8 @@ void OLED_clear() {
 //      // send a bunch of data in one xmission
 //      tw_setAddress(SlaveAddress);
 //      tw_write(SSD1306_Data_Mode);            // data mode
-//      for (uint8_t k=0;k<16;k++){
-//        tw_write((uint8_t) i*16 + k + off);
+//      for (unsigned char k=0;k<16;k++){
+//        tw_write((unsigned char) i*16 + k + off);
 //      }
 //      tw_doTransmission(1);
 //    }
@@ -583,7 +583,7 @@ void OLED_printString( char * pText ){
 //      tw_setAddress(SlaveAddress);
 //     tw_write(SSD1306_Data_Mode);            // data mode
 //
-//      tw_write((uint8_t) data );
+//      tw_write((unsigned char) data );
 //      tw_doTransmission(1);
 //
 //  }

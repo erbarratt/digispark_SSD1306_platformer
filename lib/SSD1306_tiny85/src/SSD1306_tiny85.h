@@ -79,13 +79,15 @@
 	#define Dummy_Byte_0x00                       0x00
 	#define Dummy_Byte_0xFF                       0xFF
 
-	uint8_t OLED_addToUSIBuffer(uint8_t data);
-	uint8_t OLED_transmitBuffer(uint8_t);
-	void OLED_sendCommand(unsigned char);
+	extern unsigned char USI_Buf[USI_BUF_SIZE];
+
+	unsigned char OLED_addToUSIBuffer(unsigned char data);
+	unsigned char OLED_transmitBuffer(unsigned char);
+	unsigned char OLED_sendCommand(unsigned char);
 	void OLED_init();
 	void OLED_clear();
 	void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h);
-	void OLED_cursorTo( unsigned char row, unsigned char col );
+	void OLED_cursorTo( unsigned char col, unsigned char row );
 	void OLED_printChar( unsigned char ch );
 	void OLED_printString( char * pText );
 

@@ -32,10 +32,10 @@
 #include "TinyWireM.h"
 
 // Initialize Class Variables //////////////////////////////////////////////////
-uint8_t USI_Buf[USI_BUF_SIZE]; // holds I2C send and receive data
-uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
-//uint8_t USI_LastRead = 0;   // number of bytes read so far
-//uint8_t USI_BytesAvail = 0; // number of bytes requested but not read
+unsigned char USI_Buf[USI_BUF_SIZE]; // holds I2C send and receive data
+unsigned char USI_BufIdx = 0;     // current number of bytes in the send buff
+//unsigned char USI_LastRead = 0;   // number of bytes read so far
+//unsigned char USI_BytesAvail = 0; // number of bytes requested but not read
 
 // Public Methods //////////////////////////////////////////////////////////////
 
@@ -46,12 +46,12 @@ uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
 		USI_TWI_Master_Initialise();
 	}
 
-	void tw_setAddress( uint8_t slaveAddr) { // setup address & write bit
+	void tw_setAddress( unsigned char slaveAddr) { // setup address & write bit
 		USI_BufIdx = 0;
 		USI_Buf[USI_BufIdx] = (slaveAddr << TWI_ADR_BITS) | USI_SEND;
 	}
 
-	size_t tw_write(uint8_t data) { // buffers up data to send
+	size_t tw_write(unsigned char data) { // buffers up data to send
 		if (USI_BufIdx >= USI_BUF_SIZE - 1){
 			return 0;   // dont blow out the buffer
 		}
@@ -60,11 +60,11 @@ uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
 		return 1;
 	}
 
-	//uint8_t endTransmission() { return endTransmission(1); }
+	//unsigned char endTransmission() { return endTransmission(1); }
 
-	uint8_t tw_doTransmission(uint8_t stop) { // actually sends the buffer
+	unsigned char tw_doTransmission(unsigned char stop) { // actually sends the buffer
 		bool xferOK = false;
-		uint8_t errorCode;
+		unsigned char errorCode;
 		xferOK = USI_TWI_Start_Read_Write( USI_Buf, USI_BufIdx + 1); // core func that does the work
 		USI_BufIdx = 0;
 		if (xferOK) {
@@ -82,9 +82,9 @@ uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
 		}
 	}
 
-	//uint8_t tw_requestFrom(uint8_t slaveAddr, uint8_t numBytes) { // setup for receiving from slave
+	//unsigned char tw_requestFrom(unsigned char slaveAddr, unsigned char numBytes) { // setup for receiving from slave
 	//	bool xferOK = false;
-	//	uint8_t errorCode = 0;
+	//	unsigned char errorCode = 0;
 	//	USI_LastRead = 0;
 	//	USI_BytesAvail = numBytes; // save this off in a global
 	//	numBytes++;                // add extra byte to transmit header
@@ -104,7 +104,7 @@ uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
 	//	}
 	//}
 
-	//uint8_t tw_receive(void) {
+	//unsigned char tw_receive(void) {
 	//	int c = tw_read();
 	//	if (c < 0){
 	//		return 0;
@@ -113,7 +113,7 @@ uint8_t USI_BufIdx = 0;     // current number of bytes in the send buff
 	//}
 
 	//int tw_read() { // returns the bytes received one at a time
-	//	USI_LastRead++;     // inc first since first uint8_t read is in USI_Buf[1]
+	//	USI_LastRead++;     // inc first since first unsigned char read is in USI_Buf[1]
 	//	return USI_Buf[USI_LastRead];
 	//}
 	//

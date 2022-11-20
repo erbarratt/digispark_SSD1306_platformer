@@ -17,13 +17,13 @@
  * Put in setup():
  *	TinyWireM.begin(){                               // initialize I2C lib
  * To Send:
- *	TinyWireM.beginTransmission(uint8_t slaveAddr){  // setup slave's
- *address (7 bit address - same as Wire) TinyWireM.send(uint8_t data){ // buffer
+ *	TinyWireM.beginTransmission(unsigned char slaveAddr){  // setup slave's
+ *address (7 bit address - same as Wire) TinyWireM.send(unsigned char data){ // buffer
  *up bytes to send - can be called multiple times someByte =
  *TinyWireM.endTransmission(){          // actually send the bytes in the buffer
  *	                                                 // returns (optional) 0
  *= sucess or see USI_TWI_Master.h for error codes To Receive: someByte =
- *TinyWireM.requestFrom(uint8_t slaveAddr, uint8_t numBytes){      // reads
+ *TinyWireM.requestFrom(unsigned char slaveAddr, unsigned char numBytes){      // reads
  *'numBytes' from slave's address
  *	                                                 // (usage optional)
  *returns 0= success or see USI_TWI_Master.h for error codes someByte =
@@ -57,10 +57,10 @@
 	#define USI_RCVE 1      //!< indicates receiving from TWI
 	#define USI_BUF_SIZE 18 //!< bytes in message buffer
 
-	extern uint8_t USI_Buf[];      // holds I2C send and receive data
-	extern uint8_t USI_BufIdx;     // current number of bytes in the send buff
-	//extern uint8_t USI_LastRead;   // number of bytes read so far
-	//extern uint8_t USI_BytesAvail; // number of bytes requested but not read
+	extern unsigned char USI_Buf[];      // holds I2C send and receive data
+	extern unsigned char USI_BufIdx;     // current number of bytes in the send buff
+	//extern unsigned char USI_LastRead;   // number of bytes read so far
+	//extern unsigned char USI_BytesAvail; // number of bytes requested but not read
 
 
 	/*!
@@ -72,14 +72,14 @@
 	* @brief Setup address & write bit
 	* @param slaveAddr Secondary device address
 	*/
-		void tw_setAddress(uint8_t);
+		void tw_setAddress(unsigned char);
 
 	/*!
 	* @brief Buffers up data to send
 	* @param data Data to send
 	* @return Returns 1 when successful
 	*/
-		size_t tw_write(uint8_t);
+		size_t tw_write(unsigned char);
 
 	/*!
 	* @brief Sends data
@@ -87,7 +87,7 @@
 	* @param n How much data to send
 	* @return Returns 1 when successful
 	*/
-	//size_t write(uint8_t *d, uint8_t n) {
+	//size_t write(unsigned char *d, unsigned char n) {
 		//uint16_t i;
 		//for (i = 0; i < n; i++){
 		//	write(d[i]);
@@ -100,35 +100,35 @@
 	* @param n Data to send
 	* @return Returns 1 when successful
 	*/
-		//inline size_t write(unsigned long n) { return write((uint8_t)n); }
+		//inline size_t write(unsigned long n) { return write((unsigned char)n); }
 
 	/*!
 	* @brief Sends data
 	* @param n Data to send
 	* @return Returns 1 when successful
 	*/
-		//inline size_t write(long n) { return write((uint8_t)n); }
+		//inline size_t write(long n) { return write((unsigned char)n); }
 
 	/*!
 	* @brief Sends data
 	* @param n Data to send
 	* @return Returns 1 when successful
 	*/
-		//inline size_t write(unsigned int n) { return write((uint8_t)n); }
+		//inline size_t write(unsigned int n) { return write((unsigned char)n); }
 
 	/*!
 	* @brief Sends data
 	* @param n Data to send
 	* @return Returns 1 when successful
 	*/
-		//inline size_t write(int n) { return write((uint8_t)n); }
+		//inline size_t write(int n) { return write((unsigned char)n); }
 
 	/*!
 	* @brief Buffers up data to send
 	* @param b Data to send
 	* @return Returns 1 when successful
 	*/
-		//void tw_write(uint8_t b) { tw_write(b); }
+		//void tw_write(unsigned char b) { tw_write(b); }
 
 	/*!
 	* @brief Sends data
@@ -136,27 +136,27 @@
 	* @param n How much to send from buffer
 	* @return Returns 1 when successful
 	*/
-		//void send(uint8_t *d, uint8_t n) { write(d, n); }
+		//void send(unsigned char *d, unsigned char n) { write(d, n); }
 
 	/*!
 	* @brief Sends data
 	* @param n Data to send
 	* @return Returns 1 when successful
 	*/
-		//void send(int n) { write((uint8_t)n); }
+		//void send(int n) { write((unsigned char)n); }
 
 	/*!
 	* @brief Ends the transmission
 	* @return Returns the error code if there was one
 	*/
-		//uint8_t endTransmission();
+		//unsigned char endTransmission();
 
 	/*!
 	* @brief Ends the transmission
 	* @param stop Buffer to send to end the transmission
 	* @return Returns the error code if there was one
 	*/
-		uint8_t tw_doTransmission(uint8_t);
+		unsigned char tw_doTransmission(unsigned char);
 
 	/*!
 	* @brief Setup for receiving from secondary
@@ -164,7 +164,7 @@
 	* @param numBytes How many bytes to request
 	* @return Returns 0, if there was an error, returns the error code
 	*/
-		//uint8_t tw_requestFrom(uint8_t, uint8_t);
+		//unsigned char tw_requestFrom(unsigned char, unsigned char);
 
 	/*!
 	* @brief Returns the bytes received one at a time
@@ -193,7 +193,7 @@
 	* @brief Receives data from the device
 	* @return Returns the data
 	*/
-		//uint8_t tw_receive(void);
+		//unsigned char tw_receive(void);
 
 	/*!
 	* @brief Function for generating a TWI Stop Condition. Used to release

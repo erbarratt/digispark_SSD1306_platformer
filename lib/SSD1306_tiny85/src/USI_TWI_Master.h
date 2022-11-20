@@ -36,8 +36,7 @@
 // Defines error code generating
 //#define PARAM_VERIFICATION
 //#define NOISE_TESTING
-#define SIGNAL_VERIFY //!< Verifies the signal is correct. This should probably
-                      //!< be on always.
+#define SIGNAL_VERIFY //!< Verifies the signal is correct. This should probably be on always.
 
 /****************************************************************************
   Bit and byte definitions

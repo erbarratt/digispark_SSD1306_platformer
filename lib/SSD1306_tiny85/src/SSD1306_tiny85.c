@@ -1,6 +1,6 @@
 #include "SSD1306_tiny85.h"
 
-const uint8_t digital_font5x7[] PROGMEM =
+const unsigned char digital_font5x7[] PROGMEM =
 {
 	0x00, 0x05, 0x07, 0x20,
 	0x00, 0x00, 0x00, 0x00, 0x00, // char ' ' (0x20/32)
@@ -101,22 +101,23 @@ const uint8_t digital_font5x7[] PROGMEM =
 	0x36, 0x41, 0x36, 0x00, 0x00, // char '' (0x7F/127)
 };
 
-	uint8_t USI_Buf[USI_BUF_SIZE]; // holds I2C send and receive data
-	uint8_t USI_BufIdx = 1;     // current number of bytes in the send buff
+	unsigned char USI_Buf[USI_BUF_SIZE]; // holds I2C send and receive data
+	unsigned char USI_BufIdx = 1;     // current number of bytes in the send buff
 
-	uint8_t OLED_addToUSIBuffer(uint8_t data) { // buffers up data to send
+	unsigned char OLED_addToUSIBuffer(unsigned char data) { // buffers up data to send
 		if (USI_BufIdx >= USI_BUF_SIZE - 1){
 			return 0;   // dont blow out the buffer
 		}
-		USI_BufIdx++; // inc for next byte in buffer
 		USI_Buf[USI_BufIdx] = data;
+		USI_BufIdx++; // inc for next byte in buffer
 		return 1;
 	}
 
-	uint8_t OLED_transmitBuffer(uint8_t stop) { // actually sends the buffer
+	unsigned char OLED_transmitBuffer(unsigned char stop) { // actually sends the buffer
+
 		bool xferOK = false;
-		uint8_t errorCode;
-		xferOK = USI_TWI_Start_Read_Write( USI_Buf, USI_BufIdx + 1); // core func that does the work
+		unsigned char errorCode;
+		xferOK = USI_TWI_Start_Transceiver_With_Data( USI_Buf, USI_BufIdx + 1); // core func that does the work
 		USI_BufIdx = 1;
 		if (xferOK) {
 			if (stop) {
@@ -131,13 +132,15 @@ const uint8_t digital_font5x7[] PROGMEM =
 			errorCode = USI_TWI_Get_State_Info(); // this function returns the error number
 			return errorCode;
 		}
+
 	}
 
-	void OLED_sendCommand(unsigned char command)
+	unsigned char OLED_sendCommand(unsigned char command)
 	{
+		USI_TWI_Master_Initialise();         									//initialize I2C
 		OLED_addToUSIBuffer(SSD1306_Command_Mode);	     					//Set OLED Command mode
 		OLED_addToUSIBuffer(command);										//add the byte of data
-		OLED_transmitBuffer(0);											//transmit buffer
+		return OLED_transmitBuffer(1);										//transmit buffer
 	}
 
 	void OLED_init()
@@ -146,7 +149,7 @@ const uint8_t digital_font5x7[] PROGMEM =
 		//write address as always the first byte in the buffer
 		USI_Buf[0] = (SlaveAddress << TWI_ADR_BITS) | USI_SEND;
 
-		USI_TWI_Master_Initialise();         									//initialize I2C
+		//USI_TWI_Master_Initialise();         									//initialize I2C
 
 		OLED_sendCommand(SSD1306_Display_Off_Cmd);    					/*display off*/
 
@@ -196,19 +199,23 @@ const uint8_t digital_font5x7[] PROGMEM =
 
 	void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h){
 
+		USI_TWI_Master_Initialise();         									//initialize I2C
+
 		OLED_addToUSIBuffer(SSD1306_Command_Mode);            				// command mode
 		OLED_addToUSIBuffer(Set_Column_Address_Cmd);
 		OLED_addToUSIBuffer(0);
 		OLED_addToUSIBuffer(col);
 		OLED_addToUSIBuffer(col + w - 1);
-		OLED_transmitBuffer(0);                    						// stop I2C transmission
+		OLED_transmitBuffer(1);                    						// stop I2C transmission
+
+		USI_TWI_Master_Initialise();         									//initialize I2C
 
 		OLED_addToUSIBuffer(SSD1306_Command_Mode);            				// command mode
 		OLED_addToUSIBuffer(Set_Page_Address_Cmd);
 		OLED_addToUSIBuffer(0);
 		OLED_addToUSIBuffer(row);
 		OLED_addToUSIBuffer(row + h - 1);
-		OLED_transmitBuffer(0);                    						// stop I2C transmission
+		OLED_transmitBuffer(1);                    						// stop I2C transmission
 
 	}
 
@@ -229,7 +236,7 @@ const uint8_t digital_font5x7[] PROGMEM =
 			for (unsigned char k=0;k<16;k++){
 				OLED_addToUSIBuffer(0);
 			}
-			OLED_transmitBuffer(0);
+			OLED_transmitBuffer(1);
 		}
 
 	}
@@ -249,7 +256,7 @@ const uint8_t digital_font5x7[] PROGMEM =
 		OLED_addToUSIBuffer(pgm_read_byte( &(digital_font5x7[(ch*5) - 156 + 4]) ));
 		OLED_addToUSIBuffer(0x00);
 
-		OLED_transmitBuffer(0);
+		OLED_transmitBuffer(1);
 
 	}
 
