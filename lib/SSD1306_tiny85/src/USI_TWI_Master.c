@@ -32,6 +32,7 @@ union USI_TWI_state
 		unsigned char memReadMode: 1;         //!< Read memory mode
 		unsigned char unused: 5;              //!< Unused
 	};
+
 } USI_TWI_state; //!< USI_TWI_state The state of the USI_TWI
 
 /**
@@ -206,7 +207,7 @@ void USI_TWI_Master_Initialise()
 		unsigned char *savedMsg = msg;
 		unsigned char savedMsgSize = msgSize;
 
-		// This clear must be done before calling this function so that memReadMode
+		// This OLED_clear must be done before calling this function so that memReadMode
 		// can be specified.
 		//  USI_TWI_state.errorState = 0;				// Clears all
 		//  mode bits also
@@ -356,7 +357,7 @@ void USI_TWI_Master_Initialise()
  */
 unsigned char USI_TWI_Start_Random_Read(unsigned char *msg, unsigned char msgSize)
 {
-	*(msg) &= ~(TRUE << TWI_READ_BIT); // clear the read bit if it's set
+	*(msg) &= ~(TRUE << TWI_READ_BIT); // OLED_clear the read bit if it's set
 	USI_TWI_state.errorState = 0;
 	USI_TWI_state.memReadMode = TRUE;
 	return (USI_TWI_Start_Transceiver_With_Data(msg, msgSize));

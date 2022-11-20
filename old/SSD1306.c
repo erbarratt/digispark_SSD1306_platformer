@@ -379,7 +379,7 @@ unsigned char getFlash( const unsigned char * mem, unsigned int idx  ){
   return pgm_read_byte( &(mem[idx]) );
 }
 
-void sendCommand(unsigned char command)
+void OLED_sendCommand(unsigned char command)
 {
   tw_begin();                       		//initialize I2C
   tw_setAddress(SlaveAddress); 		// begin I2C communication
@@ -408,56 +408,56 @@ void init()
 	// constructor(128, 64);
 	//SlaveAddress = address;
 
-	sendCommand(SSD1306_Display_Off_Cmd);    				/*display off*/
+	OLED_sendCommand(SSD1306_Display_Off_Cmd);    				/*display off*/
 
-	sendCommand(Set_Multiplex_Ratio_Cmd);    					/*multiplex ratio*/
-	sendCommand(0x3F);    										/*duty = 1/64*/
+	OLED_sendCommand(Set_Multiplex_Ratio_Cmd);    					/*multiplex ratio*/
+	OLED_sendCommand(0x3F);    										/*duty = 1/64*/
 
-	sendCommand(Set_Display_Offset_Cmd);    					/*set display offset*/
-	sendCommand(0x00);
-
-
-	sendCommand(Set_Memory_Addressing_Mode_Cmd); 				//set addressing mode
-	sendCommand(HORIZONTAL_MODE); 								//set horizontal addressing mode
-
-	sendCommand(0xB0); 										//set page address
-	sendCommand(0x00); 										//set column lower address
-	sendCommand(0x10); 										//set column higher address
+	OLED_sendCommand(Set_Display_Offset_Cmd);    					/*set display offset*/
+	OLED_sendCommand(0x00);
 
 
+	OLED_sendCommand(Set_Memory_Addressing_Mode_Cmd); 				//set addressing mode
+	OLED_sendCommand(HORIZONTAL_MODE); 								//set horizontal addressing mode
 
-	sendCommand(0x40);    										/*set display starconstructort line*/
+	OLED_sendCommand(0xB0); 										//set page address
+	OLED_sendCommand(0x00); 										//set column lower address
+	OLED_sendCommand(0x10); 										//set column higher address
 
-	sendCommand(Set_Contrast_Cmd);    							/*contract control*/
-	sendCommand(0xcf);    										/*128*/
 
-	sendCommand(Segment_Remap_Cmd);   						 	/*set segment remap*/
 
-	sendCommand(COM_Output_Remap_Scan_Cmd);    				/*Com scan direction*/
+	OLED_sendCommand(0x40);    										/*set display starconstructort line*/
 
-	sendCommand(SSD1306_Normal_Display_Cmd);    			/*normal / reverse*/
+	OLED_sendCommand(Set_Contrast_Cmd);    							/*contract control*/
+	OLED_sendCommand(0xcf);    										/*128*/
 
-	sendCommand(Set_Display_Clock_Divide_Ratio_Cmd);    		/*set osc division*/
-	sendCommand(0x80);
+	OLED_sendCommand(Segment_Remap_Cmd);   						 	/*set segment remap*/
 
-	sendCommand(Set_Precharge_Period_Cmd);    					/*set pre-charge period*/
-	sendCommand(0xf1);
+	OLED_sendCommand(COM_Output_Remap_Scan_Cmd);    				/*Com scan direction*/
 
-	sendCommand(Set_COM_Pins_Hardware_Config_Cmd);    			/*set COM pins*/
-	sendCommand(0x12);
+	OLED_sendCommand(SSD1306_Normal_Display_Cmd);    			/*normal / reverse*/
 
-	sendCommand(Set_VCOMH_Deselect_Level_Cmd);    				/*set vcomh*/
-	sendCommand(0x30);
+	OLED_sendCommand(Set_Display_Clock_Divide_Ratio_Cmd);    		/*set osc division*/
+	OLED_sendCommand(0x80);
 
-	sendCommand(Deactivate_Scroll_Cmd);
+	OLED_sendCommand(Set_Precharge_Period_Cmd);    					/*set pre-charge period*/
+	OLED_sendCommand(0xf1);
 
-	sendCommand(Charge_Pump_Setting_Cmd);    					/*set charge pump enable*/
-	sendCommand(Charge_Pump_Enable_Cmd);
+	OLED_sendCommand(Set_COM_Pins_Hardware_Config_Cmd);    			/*set COM pins*/
+	OLED_sendCommand(0x12);
 
-	sendCommand(SSD1306_Display_On_Cmd);    				/*display ON*/
+	OLED_sendCommand(Set_VCOMH_Deselect_Level_Cmd);    				/*set vcomh*/
+	OLED_sendCommand(0x30);
+
+	OLED_sendCommand(Deactivate_Scroll_Cmd);
+
+	OLED_sendCommand(Charge_Pump_Setting_Cmd);    					/*set charge pump enable*/
+	OLED_sendCommand(Charge_Pump_Enable_Cmd);
+
+	OLED_sendCommand(SSD1306_Display_On_Cmd);    				/*display ON*/
 }
 
-void clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h){
+void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h){
 
 	tw_begin();                    						//initialize I2C
 	tw_setAddress(SlaveAddress); 				// begin I2C transmission
@@ -483,25 +483,25 @@ void clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned ch
 
 }
 
-void cursorTo(unsigned char col, unsigned char row){
-  clipArea(col, row, 128-col, 8-row);
+void OLED_cursorTo(unsigned char col, unsigned char row){
+	OLED_clipArea(col, row, 128 - col, 8 - row);
 }
 
 //void startScreen(){
 //
-//  sendCommand(0x00 | 0x0);  // low col = 0
-//  sendCommand(0x10 | 0x0);  // hi col = 0
-//  sendCommand(0x40 | 0x0); // line #0
+//  OLED_sendCommand(0x00 | 0x0);  // low col = 0
+//  OLED_sendCommand(0x10 | 0x0);  // hi col = 0
+//  OLED_sendCommand(0x40 | 0x0); // line #0
 //
 //}
 
-void clear() {
+void OLED_clear() {
 
-	sendCommand(0x00 | 0x0);  // low col = 0
-	sendCommand(0x10 | 0x0);  // hi col = 0
-	sendCommand(0x40 | 0x0); // line #0
+	OLED_sendCommand(0x00 | 0x0);  // low col = 0
+	OLED_sendCommand(0x10 | 0x0);  // hi col = 0
+	OLED_sendCommand(0x40 | 0x0); // line #0
 
-	clipArea(0,0,128,8);
+	OLED_clipArea(0, 0, 128, 8);
 
 	for (uint16_t i=0; i<=((128*64/8)/16); i++){
 		// send a bunch of data in one xmission
@@ -516,9 +516,9 @@ void clear() {
 }
 
 //void displayX(int off) {
-//  sendCommand(0x00 | 0x0);  // low col = 0
-//  sendCommand(0x10 | 0x0);  // hi col = 0
-//  sendCommand(0x40 | 0x0); // line #0
+//  OLED_sendCommand(0x00 | 0x0);  // low col = 0
+//  OLED_sendCommand(0x10 | 0x0);  // hi col = 0
+//  OLED_sendCommand(0x40 | 0x0); // line #0
 //
 //    for (uint16_t i=0; i<=((128*64/8)/16); i++)
 //    {
@@ -532,7 +532,7 @@ void clear() {
 //    }
 //}
 
-void printChar( unsigned char ch ){
+void OLED_printChar( unsigned char ch ){
 
     unsigned char data[5];
 
@@ -560,12 +560,12 @@ void printChar( unsigned char ch ){
 
 }
 
-void printString( char * pText ){
+void OLED_printString( char * pText ){
   unsigned char i;
   unsigned char len = strlen( pText );
 
   for (i=0;i<len;i++){
-     printChar( pText[i] );
+	  OLED_printChar(pText[i]);
   }
 
 }
@@ -574,7 +574,7 @@ void printString( char * pText ){
 //void drawImage( const unsigned char * img, unsigned char col, unsigned char row, unsigned char w, unsigned char h ){
 //  unsigned int i,data;
 //
-//  clipArea( col, row, w, h);
+//  OLED_clipArea( col, row, w, h);
 //
 //  for (i=0;i< (w*h);i++){
 //

@@ -48,10 +48,10 @@
 #define TinyWireM_h
 
 	//#include "Arduino.h"
-	#include <stdint.h>
-	#include <stddef.h>
-	#include <stdbool.h>
-	#include "USI_TWI_Master.h"
+	#include "../../../.platformio/packages/toolchain-atmelavr/lib/gcc/avr/7.3.0/include/stdint.h"
+	#include "../../../.platformio/packages/toolchain-atmelavr/lib/gcc/avr/7.3.0/include/stddef.h"
+	#include "../../../.platformio/packages/toolchain-atmelavr/lib/gcc/avr/7.3.0/include/stdbool.h"
+	#include "../lib/TinyWire/src/USI_TWI_Master.h"
 
 	#define USI_SEND 0      //!< indicates sending to TWI
 	#define USI_RCVE 1      //!< indicates receiving from TWI

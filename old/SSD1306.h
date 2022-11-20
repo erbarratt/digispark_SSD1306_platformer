@@ -33,8 +33,8 @@
 #define __SSD1306_MINIMAL_H__
 
 //#include <Arduino.h>
-#include <avr/pgmspace.h>
-#include <string.h>
+#include "../../../.platformio/packages/toolchain-atmelavr/avr/include/avr/pgmspace.h"
+#include "../../../.platformio/packages/toolchain-atmelavr/avr/include/string.h"
 #include "TinyWireM.h"
 //#include "USI_TWI_Master.h"
 
@@ -110,23 +110,23 @@
     // call this function once in "void setup()" to initiallize the display
     void init();
 
-    // reset clipArea to maximum and clear the display
-    void clear();
+    // reset OLED_clipArea to maximum and OLED_clear the display
+    void OLED_clear();
 
-    // move cursor to upper left corner in current clipArea
+    // move cursor to upper left corner in current OLED_clipArea
     void startScreen();
 
-    // set the clipArea, by default (0,0,128,8)
-    void clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h);
+    // set the OLED_clipArea, by default (0,0,128,8)
+    void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h);
 
-    // move the cursor to a location (similar to clipArea)
-    void cursorTo( unsigned char row, unsigned char col );
+    // move the cursor to a location (similar to OLED_clipArea)
+    void OLED_cursorTo( unsigned char row, unsigned char col );
 
     // print a single character
-    void printChar( unsigned char ch );
+    void OLED_printChar( unsigned char ch );
 
     // print a string to the screen
-    void printString( char * pText );
+    void OLED_printString( char * pText );
 
     // draw an image with defined x,y position and width,height definition
     void drawImage( const unsigned char * img, unsigned char col, unsigned char row, unsigned char w, unsigned char h );
@@ -135,7 +135,7 @@
     void displayX(int off);
 
 //  private:
-    void sendCommand(unsigned char command);
+    void OLED_sendCommand(unsigned char command);
     void sendData(unsigned char Data);
 
     unsigned char getFlash( const unsigned char * mem, unsigned int idx  );

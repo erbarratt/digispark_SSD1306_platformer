@@ -1,17 +1,17 @@
 #include <avr/io.h>
-#include "../lib/TinyWire/src/SSD1306.h"
+#include "../lib/SSD1306_tiny85/src/SSD1306_tiny85.h"
 #define PIN_LED 1
 
 int main() {
 
-	init();   // init OLED display
-	clear();
+	OLED_init();   // init OLED display
+	//OLED_clear();
 
 	//analogRead on pin P5
-	cursorTo(0, 0);
-	printString( "V0: ");
-	cursorTo(30, 0);
-	printString(" 2V");
+	OLED_cursorTo(0, 0);
+	OLED_printString("V0: ");
+	OLED_cursorTo(30, 0);
+	OLED_printString(" 2V");
 	
 	// Initalize LED pin as output
 	DDRB |= (1 << PIN_LED);
