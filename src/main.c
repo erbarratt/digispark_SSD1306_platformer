@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include "../lib/TinyWire/src/SSD1306_minimal.h"
+#include "../lib/TinyWire/src/SSD1306.h"
 #define PIN_LED 1
 
 int main() {

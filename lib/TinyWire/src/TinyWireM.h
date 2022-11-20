@@ -59,8 +59,8 @@
 
 	extern uint8_t USI_Buf[];      // holds I2C send and receive data
 	extern uint8_t USI_BufIdx;     // current number of bytes in the send buff
-	extern uint8_t USI_LastRead;   // number of bytes read so far
-	extern uint8_t USI_BytesAvail; // number of bytes requested but not read
+	//extern uint8_t USI_LastRead;   // number of bytes read so far
+	//extern uint8_t USI_BytesAvail; // number of bytes requested but not read
 
 
 	/*!
@@ -72,7 +72,7 @@
 	* @brief Setup address & write bit
 	* @param slaveAddr Secondary device address
 	*/
-		void tw_beginTransmission(uint8_t);
+		void tw_setAddress(uint8_t);
 
 	/*!
 	* @brief Buffers up data to send
@@ -156,7 +156,7 @@
 	* @param stop Buffer to send to end the transmission
 	* @return Returns the error code if there was one
 	*/
-		uint8_t tw_endTransmission(uint8_t);
+		uint8_t tw_doTransmission(uint8_t);
 
 	/*!
 	* @brief Setup for receiving from secondary
@@ -164,41 +164,41 @@
 	* @param numBytes How many bytes to request
 	* @return Returns 0, if there was an error, returns the error code
 	*/
-		uint8_t tw_requestFrom(uint8_t, uint8_t);
+		//uint8_t tw_requestFrom(uint8_t, uint8_t);
 
 	/*!
 	* @brief Returns the bytes received one at a time
 	* @return Returns the bytes received one at a time
 	*/
-		int tw_read();
+		//int tw_read();
 
 	/*!
 	* @brief The bytes available htat haven't been read yet
 	* @return Returns how many bytes are available
 	*/
-		int tw_available();
+		//int tw_available();
 
 	/*!
 	* @brief Returns the top value
 	* @return Returns the top value
 	*/
-		int ptw_eek(void);
+		//int ptw_eek(void);
 
 	/*!
 	* @brief Flushes the buffer
 	*/
-		void tw_flush(void);
+		//void tw_flush(void);
 
 	/*!
 	* @brief Receives data from the device
 	* @return Returns the data
 	*/
-		uint8_t tw_receive(void);
+		//uint8_t tw_receive(void);
 
 	/*!
 	* @brief Function for generating a TWI Stop Condition. Used to release
 	* the TWI bus
 	*/
-	void tw_end();
+	//void tw_end();
 
 #endif

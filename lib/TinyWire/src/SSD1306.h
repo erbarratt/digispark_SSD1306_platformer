@@ -15,7 +15,7 @@
       products from CoPiino Electronics!
 
       What is it?
-        This library is derived from SSD1306OLED library, only for SSD1306 in I2C Mode.
+        This library is derived from SSD1306 library, only for SSD1306 in I2C Mode.
         As the original library only supports Frame Buffered mode which requires to have
         at least 1024bytes of free RAM for a 128x64px display it is too big for smaller devices.
 
@@ -41,18 +41,18 @@
 // config
 #define SlaveAddress 0x3c
 
-// defines taken from SSD1306OLED
-#define SSD1306OLED_Command_Mode		      0x80
-#define SSD1306OLED_Data_Mode		      0x40
+// defines taken from SSD1306
+#define SSD1306_Command_Mode		      0x80
+#define SSD1306_Data_Mode		      0x40
 
-//Fundamental Command (more than one bytes command pleaserefer to SSD1306 datasheet for details)
+//Fundamental Command (more than one bytes command please refer to SSD1306 datasheet for details)
 #define Set_Contrast_Cmd                      0x81     //Double byte command to select 1 out of 256 contrast steps.Default(RESET = 0x7F)
 #define Entire_Display_On_Resume_Cmd          0xA4     //Resume to RAM content display(RESET), Output follows RAM content
 #define Entire_Display_On_Cmd                 0xA5     //Entire display ON, Output ignores RAM content
-#define SSD1306OLED_Normal_Display_Cmd	        0xA6     //Normal display (RESET)
-#define SSD1306OLED_Inverse_Display_Cmd	      0xA7     //Inverse display
-#define SSD1306OLED_Display_Off_Cmd	          0xAE     //sleep mode(RESET)
-#define SSD1306OLED_Display_On_Cmd	            0xAF     //normal mode
+#define SSD1306_Normal_Display_Cmd	        	0xA6     //Normal display (RESET)
+#define SSD1306_Inverse_Display_Cmd	      0xA7     //Inverse display
+#define SSD1306_Display_Off_Cmd	          0xAE     //sleep mode(RESET)
+#define SSD1306_Display_On_Cmd	            0xAF     //normal mode
 
 //Scrolling Command (more than one bytes command pleaserefer to SSD1306 datasheet for details)
 #define Right_Horizontal_Scroll_Cmd           0x26
