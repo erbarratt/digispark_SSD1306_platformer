@@ -108,7 +108,7 @@
 
 
     // call this function once in "void setup()" to initiallize the display
-    void init(uint8_t address);
+    void init();
 
     // reset clipArea to maximum and clear the display
     void clear();

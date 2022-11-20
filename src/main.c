@@ -4,8 +4,7 @@
 
 int main() {
 
-	tw_begin(); // init I2C library
-	init(0x3c);   // init OLED display
+	init();   // init OLED display
 	clear();
 
 	//analogRead on pin P5
