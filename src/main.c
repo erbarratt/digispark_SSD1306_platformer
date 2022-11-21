@@ -4,6 +4,9 @@
 
 int main() {
 
+	for (long i = 0; i < 500000; i++) {
+		asm("");
+	}
 	OLED_init();   // init OLED display
 	//OLED_clear();
 	//return 0;
@@ -14,7 +17,7 @@ int main() {
 
 	while (1) {
 		OLED_clear();
-		OLED_cursorTo(0, row);
+		OLED_clipArea(0, row, 128 - 0, 8 - row);
 		OLED_printString("Love You");
 		row++;
 		if(row > 7){
