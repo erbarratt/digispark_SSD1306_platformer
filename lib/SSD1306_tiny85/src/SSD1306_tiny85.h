@@ -6,9 +6,9 @@
 	#include "USI_TWI_Master.h"
 
 	//USI Values
-	#define USI_SEND 0      //!< indicates sending to TWI
-	#define USI_RCVE 1      //!< indicates receiving from TWI
-	#define USI_BUF_SIZE 32 //!< bytes in message buffer
+	#define USI_SEND 								0      	// indicates sending to TWI
+	#define USI_RCVE 								1      	// indicates receiving from TWI
+	#define USI_BUF_SIZE 							34 		// bytes in message buffer 33, so 0 is always address, and 33 bytes (1 command byte and 32 data bytes, or all whatever, as needed, see clear())
 
 	// config
 	#define SlaveAddress 0x3c
