@@ -1,34 +1,31 @@
+#define F_CPU 16000000UL
 #include <avr/io.h>
-#include "../lib/SSD1306_tiny85/src/SSD1306_tiny85.h"
+
+#include "../lib/flappy_tiny85/src/game.h"
+#include "../lib/flappy_tiny85/src/draw.h"
 #define PIN_LED 1
+
+//blue section is 128 x 48
 
 int main() {
 
-	for (long i = 0; i < 500000; i++) {
-		asm("");
+	DRAW_init();
+	GAME_init();
+
+	while (1) {
+
+		_delay_ms(66);
+		GAME_moveBird();
+		DRAW_lower();
+
+		//OLED_clear();
+		//OLED_clipArea(0, row, 128 - 0, 8 - row);
+		//OLED_printString("ARSE");
+		//for (long i = 0; i < 500000; i++) {
+		//	asm("");
+		//}
+
 	}
-	OLED_init();   // init OLED display
-	//OLED_clear();
-	//return 0;
-	//OLED_cursorTo(30, 0);
-	//OLED_printString(" 2V");
-
-	unsigned char row = 0;
-
-	//OLED_clipArea(0, row, 128 - 0, 8 - row);
-	//OLED_printString("ARSE");
-	OLED_clear();
-
-	//while (1) {
-	//
-	//	row++;
-	//	if(row > 7){
-	//		row = 0;
-	//	}
-	//	//for (long i = 0; i < 500000; i++) {
-	//	//	asm("");
-	//	//}
-	//}
 	
 	// Initalize LED pin as output
 	//DDRB |= (1 << PIN_LED);

@@ -298,6 +298,20 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	}
 
+	void OLED_clearBlue(){
+		OLED_clipArea(0, 2, 128, 8-2);
+		for (unsigned char i=0; i<= 24; i++){
+		//for (unsigned char i=0; i<= (unsigned char)((128*64/8)/16); i++){
+			OLED_addToUSIBuffer(SSD1306_Data_Mode);            			// data mode
+			for (unsigned char k=0;k<=32;k++){
+			//for (unsigned char k=0;k<16;k++){
+				OLED_addToUSIBuffer(0x00);
+				//x++;
+			}
+			OLED_xmitBuffer(1);
+		}
+	}
+
 	void OLED_printChar( unsigned char ch ){
 
 		//address = hex value of char * 5 - 156

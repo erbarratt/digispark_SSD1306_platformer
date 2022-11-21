@@ -82,6 +82,7 @@
 	void OLED_sendCommand(unsigned char);
 	void OLED_init();
 	void OLED_clear();
+	void OLED_clearBlue();
 	void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h);
 	void OLED_printChar( unsigned char ch );
 	void OLED_printString( char * pText );
