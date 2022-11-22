@@ -8,7 +8,7 @@
 	//USI Values
 	#define USI_SEND 								0      	// indicates sending to TWI
 	#define USI_RCVE 								1      	// indicates receiving from TWI
-	#define USI_BUF_SIZE 							34 		// bytes in message buffer 33, so 0 is always address, and 33 bytes (1 command byte and 32 data bytes, or all whatever, as needed, see clear())
+	#define USI_BUF_SIZE 							36 		// bytes in message buffer 33, so 0 is always address, and 33 bytes (1 command byte and 32 data bytes, or all whatever, as needed, see clear())
 
 	// config
 	#define SlaveAddress 0x3c
@@ -78,12 +78,12 @@
 	#define Dummy_Byte_0xFF                       	0xFF
 
 	void OLED_addToUSIBuffer(unsigned char data);
-	void OLED_xmitBuffer(unsigned char);
-	void OLED_sendCommand(unsigned char);
+	void OLED_xmitBuffer(unsigned char, unsigned char);
+	void OLED_addCommand(unsigned char);
 	void OLED_init();
 	void OLED_clear();
 	void OLED_clearBlue();
-	void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h);
+	void OLED_defineMemAddressArea(unsigned char col, unsigned char row, unsigned char width, unsigned char height);
 	void OLED_printChar( unsigned char ch );
 	void OLED_printString( char * pText );
 

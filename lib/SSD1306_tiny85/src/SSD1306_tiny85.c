@@ -104,16 +104,41 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	unsigned char USI_Buf[USI_BUF_SIZE]; // holds I2C send and receive data
 	unsigned char USI_BufIdx = 1;     // current number of bytes in the send buff
+	unsigned char CommandMode = 0;
 
 	void OLED_addToUSIBuffer(unsigned char data) { // buffers up data to send
+
+
 		if (USI_BufIdx >= USI_BUF_SIZE - 1){
-			return;   // dont blow out the buffer
+
+			OLED_xmitBuffer(1, 1);
+			if(CommandMode){
+				USI_Buf[USI_BufIdx] = SSD1306_Command_Mode;
+			} else {
+				USI_Buf[USI_BufIdx] = SSD1306_Data_Mode;
+			}
+
+			USI_BufIdx++;
+
 		}
+
 		USI_Buf[USI_BufIdx] = data;
 		USI_BufIdx++; // inc for next byte in buffer
 	}
 
-	void OLED_xmitBuffer(unsigned char stop) { // actually sends the buffer
+	void OLED_xmitBuffer(unsigned char stop, unsigned char start) { // actually sends the buffer
+
+		//anything in buffer?
+			if(USI_BufIdx == 1){
+				return;
+			}
+
+		// try to Send a START condition on the TWI bus.
+			if(start){
+				if(!USI_TWI_Master_Start()){
+					return;
+				}
+			}
 
 		USI_TWI_Start_Transceiver_With_Data( USI_Buf, USI_BufIdx); 				// core func that does the work
 		USI_BufIdx = 1;															//reset index back to 1, as 0 is always address set in init()
@@ -143,13 +168,13 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	}
 
-	void OLED_sendCommand(unsigned char command)
-	{
-		//USI_TWI_Master_Initialise();         									//initialize I2C
-		OLED_addToUSIBuffer(SSD1306_Command_Mode);	     				//Set OLED Command mode
-		OLED_addToUSIBuffer(command);										//add the byte of data
-		OLED_xmitBuffer(1);												//transmit buffer
-	}
+	//void OLED_addCommand(unsigned char command)
+	//{
+	//	//USI_TWI_Master_Initialise();         									//initialize I2C
+	//	OLED_addToUSIBuffer(SSD1306_Command_Mode);	     				//Set OLED Command mode
+	//	OLED_addToUSIBuffer(command);										//add the byte of data
+	//	//OLED_xmitBuffer(1);												//transmit buffer
+	//}
 
 	void OLED_init()
 	{
@@ -160,114 +185,89 @@ const unsigned char digital_font5x7[] PROGMEM =
 		USI_TWI_Master_Initialise();         									//initialize I2C
 
 		unsigned char commands[] = {
-			SSD1306_Display_Off_Cmd,
-			Set_Multiplex_Ratio_Cmd,
-			0x3F,
-			Set_Display_Offset_Cmd,
+			SSD1306_Display_Off_Cmd,										//display off
+			Set_Multiplex_Ratio_Cmd,										//multiplex ratio
+			0x3F,															//duty = 1/64
+			Set_Display_Offset_Cmd,											//set display offset
 			0x00,
-			Set_Memory_Addressing_Mode_Cmd,
-			HORIZONTAL_MODE,
-			0xB0,
-			0x00,
-			0x10,
-			0x40,
-			Set_Contrast_Cmd,
-			0xcf,
-			Segment_Remap_Cmd,
-			COM_Output_Remap_Scan_Cmd,
-			SSD1306_Normal_Display_Cmd,
-			Set_Display_Clock_Divide_Ratio_Cmd,
+			Set_Memory_Addressing_Mode_Cmd,									//set addressing mode
+			HORIZONTAL_MODE,												//set horizontal addressing mode
+			0xB0,															//set page address
+			0x00,															//set column lower address
+			0x10,															//set column higher address
+			0x40,															//set display starconstructort line
+			Set_Contrast_Cmd,												//contrast control
+			0xcf,															//128
+			Segment_Remap_Cmd,												//set segment remap
+			COM_Output_Remap_Scan_Cmd,										//Com scan direction
+			SSD1306_Normal_Display_Cmd,									//normal / reverse
+			Set_Display_Clock_Divide_Ratio_Cmd,							//set osc division
 			0x80,
-			Set_Precharge_Period_Cmd,
+			Set_Precharge_Period_Cmd,										//set pre-charge period
 			0xf1,
-			Set_COM_Pins_Hardware_Config_Cmd,
+			Set_COM_Pins_Hardware_Config_Cmd,								//set COM pins
 			0x12,
-			Set_VCOMH_Deselect_Level_Cmd,
+			Set_VCOMH_Deselect_Level_Cmd,									//set vcomh
 			0x30,
-			Deactivate_Scroll_Cmd,
-			Charge_Pump_Setting_Cmd,
+			Deactivate_Scroll_Cmd,											//Deactivate scrolling
+			Charge_Pump_Setting_Cmd,										//set charge pump enable
 			Charge_Pump_Enable_Cmd,
-			SSD1306_Display_On_Cmd
+			SSD1306_Display_On_Cmd											//display ON
 		};
 
+		CommandMode = 1;
+
 		for(unsigned char i = 0; i < 28; i++){
-			OLED_sendCommand(commands[i]);
+			OLED_addToUSIBuffer(SSD1306_Command_Mode);
+			OLED_addToUSIBuffer(commands[i]);
+
+			if(i == 14){
+				OLED_xmitBuffer(1,1);
+			}
 		}
 
-		//OLED_sendCommand(SSD1306_Display_Off_Cmd);    				//display off
-		//
-		//OLED_sendCommand(Set_Multiplex_Ratio_Cmd);    				//multiplex ratio
-		//OLED_sendCommand(0x3F);    									//duty = 1/64
-		//
-		//OLED_sendCommand(Set_Display_Offset_Cmd);    					//set display offset
-		//OLED_sendCommand(0x00);
-		//
-		//OLED_sendCommand(Set_Memory_Addressing_Mode_Cmd); 			//set addressing mode
-		//OLED_sendCommand(HORIZONTAL_MODE); 							//set horizontal addressing mode
-		//
-		//OLED_sendCommand(0xB0); 										//set page address
-		//OLED_sendCommand(0x00); 										//set column lower address
-		//OLED_sendCommand(0x10); 										//set column higher address
-		//
-		//OLED_sendCommand(0x40);    									//set display starconstructort line
-		//
-		//OLED_sendCommand(Set_Contrast_Cmd);    						//contrast control
-		//OLED_sendCommand(0xcf);    									//128
-		//
-		//OLED_sendCommand(Segment_Remap_Cmd);   						//set segment remap
-		//
-		//OLED_sendCommand(COM_Output_Remap_Scan_Cmd);    				//Com scan direction
-		//
-		//OLED_sendCommand(SSD1306_Normal_Display_Cmd);    				//normal / reverse
-		//
-		//OLED_sendCommand(Set_Display_Clock_Divide_Ratio_Cmd);    		//set osc division
-		//OLED_sendCommand(0x80);
-		//
-		//OLED_sendCommand(Set_Precharge_Period_Cmd);    				//set pre-charge period
-		//OLED_sendCommand(0xf1);
-		//
-		//OLED_sendCommand(Set_COM_Pins_Hardware_Config_Cmd);    		//set COM pins
-		//OLED_sendCommand(0x12);
-		//
-		//OLED_sendCommand(Set_VCOMH_Deselect_Level_Cmd);    			//set vcomh
-		//OLED_sendCommand(0x30);
-		//
-		//OLED_sendCommand(Deactivate_Scroll_Cmd);
-		//
-		//OLED_sendCommand(Charge_Pump_Setting_Cmd);    				//set charge pump enable
-		//OLED_sendCommand(Charge_Pump_Enable_Cmd);
-		//
-		//OLED_sendCommand(SSD1306_Display_On_Cmd);    					//display ON
+		OLED_xmitBuffer(1,1);
 
 	}
 
-	void OLED_clipArea(unsigned char col, unsigned char row, unsigned char w, unsigned char h){
+	void OLED_defineMemAddressArea(unsigned char col, unsigned char row, unsigned char width, unsigned char height){
 
-		OLED_addToUSIBuffer(SSD1306_Command_Mode);            			// command mode
+		// command mode
+		// 0x80 = 0b10000000
+		// 	1	0	0	0	0	0	0	0
+		//	Co	D/C
+		//
+		//	0b100001
+		//	0	0	1	0	0	0	0	1
+		//
+		//
+
+		OLED_addToUSIBuffer(SSD1306_Command_Mode);            	// command mode
 		OLED_addToUSIBuffer(Set_Column_Address_Cmd);
 		OLED_addToUSIBuffer(0);
 		OLED_addToUSIBuffer(col);
-		OLED_addToUSIBuffer(col + w - 1);
-		OLED_xmitBuffer(1);                    						// stop I2C transmission
+		OLED_addToUSIBuffer(col + width - 1);
+		OLED_xmitBuffer(1, 1);                    					// send current buffer but don't send stop signal
 
-		OLED_addToUSIBuffer(SSD1306_Command_Mode);            			// command mode
+		OLED_addToUSIBuffer(SSD1306_Command_Mode);            	// command mode
 		OLED_addToUSIBuffer(Set_Page_Address_Cmd);
 		OLED_addToUSIBuffer(0);
 		OLED_addToUSIBuffer(row);
-		OLED_addToUSIBuffer(row + h - 1);
-		OLED_xmitBuffer(1);                    						// stop I2C transmission
+		OLED_addToUSIBuffer(row + height - 1);
+		OLED_xmitBuffer(1, 1);                    					// stop I2C transmission
 
 	}
 
 	void OLED_clear() {
 
 		//no idea what these do....
-		//OLED_sendCommand(0x00 | 0x0);   // low col = 0
-		//OLED_sendCommand(0x10 | 0x0);   // hi col = 0
-		//OLED_sendCommand(0x40 | 0x0);   // line #0
+		//these are only for page address mode...
+		//OLED_addCommand(0x00 | 0x0);   // low col = 0
+		//OLED_addCommand(0x10 | 0x0);   // hi col = 0
+		//OLED_addCommand(0x40 | 0x0);   // line #0
 
 		//move cursor to 0,0??
-		//OLED_clipArea(0, 0, 128, 8);
+		OLED_defineMemAddressArea(0, 0, 128, 8);
 
 		//there's 8192 px
 		//that's 1024 bytes
@@ -279,6 +279,9 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 		//int x = 0;
 
+
+
+
 		for (unsigned char i=0; i<= 32; i++){
 		//for (unsigned char i=0; i<= (unsigned char)((128*64/8)/16); i++){
 			OLED_addToUSIBuffer(SSD1306_Data_Mode);            			// data mode
@@ -287,28 +290,25 @@ const unsigned char digital_font5x7[] PROGMEM =
 				OLED_addToUSIBuffer(0x00);
 				//x++;
 			}
-			OLED_xmitBuffer(1);
+			OLED_xmitBuffer(1, 1);
 		}
 
 		//char txt[5];
 		//itoa(x, txt, 10);
 		//
-		//OLED_clipArea(0, 0, 128, 8);
+		//OLED_defineMemAddressArea(0, 0, 128, 8);
 		//OLED_printString(txt);
 
 	}
 
 	void OLED_clearBlue(){
-		OLED_clipArea(0, 2, 128, 8-2);
+		OLED_defineMemAddressArea(0, 2, 128, 6);
 		for (unsigned char i=0; i<= 24; i++){
-		//for (unsigned char i=0; i<= (unsigned char)((128*64/8)/16); i++){
 			OLED_addToUSIBuffer(SSD1306_Data_Mode);            			// data mode
 			for (unsigned char k=0;k<=32;k++){
-			//for (unsigned char k=0;k<16;k++){
 				OLED_addToUSIBuffer(0x00);
-				//x++;
 			}
-			OLED_xmitBuffer(1);
+			OLED_xmitBuffer(1, 1);
 		}
 	}
 
@@ -332,9 +332,7 @@ const unsigned char digital_font5x7[] PROGMEM =
 		*	and bytes 2 - 7 are the bytes that describe the px of that column of the char
 		*
 		*/
-
 		OLED_addToUSIBuffer(SSD1306_Data_Mode);            				// data mode
-
 		OLED_addToUSIBuffer(0x00);
 		OLED_addToUSIBuffer(pgm_read_byte( &(digital_font5x7[(ch*5) - 156]) ));
 		OLED_addToUSIBuffer(pgm_read_byte( &(digital_font5x7[(ch*5) - 156 + 1]) ));
@@ -342,13 +340,14 @@ const unsigned char digital_font5x7[] PROGMEM =
 		OLED_addToUSIBuffer(pgm_read_byte( &(digital_font5x7[(ch*5) - 156 + 3]) ));
 		OLED_addToUSIBuffer(pgm_read_byte( &(digital_font5x7[(ch*5) - 156 + 4]) ));
 		OLED_addToUSIBuffer(0x00);
-
-		OLED_xmitBuffer(1);
+		OLED_xmitBuffer(1, 1);
 
 	}
 
 	void OLED_printString( char * pText ){
+
 		for (unsigned char i=0; pText[i] != '\0'; i++){
 			OLED_printChar(pText[i]);
 		}
+
 	}

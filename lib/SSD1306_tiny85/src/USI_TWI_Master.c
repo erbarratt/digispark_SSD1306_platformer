@@ -83,15 +83,15 @@ void USI_TWI_Master_Initialise()
 	unsigned char USI_TWI_Master_Start(void)
 	{
 		/* Release SCL to ensure that (repeated) Start can be performed */
-		PORT_USI |= (1 << PIN_USI_SCL); // Release SCL.
-		while(!(PORT_USI & (1 << PIN_USI_SCL))){} // Verify that SCL becomes high.
+		PORT_USI |= (1 << PIN_USI_SCL); 						// Release SCL.
+		while(!(PORT_USI & (1 << PIN_USI_SCL))){} 				// Verify that SCL becomes high.
 		//_delay_us(T2_TWI);
 
 		/* Generate Start Condition */
-		PORT_USI &= ~(1 << PIN_USI_SDA); // Force SDA LOW.
+		PORT_USI &= ~(1 << PIN_USI_SDA); 						// Force SDA LOW.
 		//_delay_us(T4_TWI);
-		PORT_USI &= ~(1 << PIN_USI_SCL); // Pull SCL LOW.
-		PORT_USI |= (1 << PIN_USI_SDA);  // Release SDA.
+		PORT_USI &= ~(1 << PIN_USI_SCL); 						// Pull SCL LOW.
+		PORT_USI |= (1 << PIN_USI_SDA);  						// Release SDA.
 
 		if(!(USISR & (1 << USISIF))){
 			USI_TWI_state.errorState = USI_TWI_MISSING_START_CON;
@@ -186,10 +186,10 @@ void USI_TWI_Master_Initialise()
 	unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
 	{
 
-		// try to Send a START condition on the TWI bus.
-			if(!USI_TWI_Master_Start()){
-				return (FALSE);
-			}
+		//// try to Send a START condition on the TWI bus.
+		//	if(!USI_TWI_Master_Start()){
+		//		return (FALSE);
+		//	}
 
 		//temporary USI status reg 8 bit
 		//11110000
