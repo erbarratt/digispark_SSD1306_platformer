@@ -77,8 +77,10 @@
 	#define Dummy_Byte_0x00                       	0x00
 	#define Dummy_Byte_0xFF                       	0xFF
 
+	extern unsigned char CommandMode;
+
 	void OLED_addToUSIBuffer(unsigned char data);
-	void OLED_xmitBuffer(unsigned char, unsigned char);
+	void OLED_xmitBuffer(unsigned char);
 	void OLED_addCommand(unsigned char);
 	void OLED_init();
 	void OLED_clear();

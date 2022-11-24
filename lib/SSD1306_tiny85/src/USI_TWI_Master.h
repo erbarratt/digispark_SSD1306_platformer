@@ -119,18 +119,17 @@
     #define PIN_USI_SCL         PINB2    // was PINB7
 */
 
-// General defines
-#define TRUE 1  //!< True
-#define FALSE 0 //!< False
-
 //********** Prototypes **********//
 
+extern unsigned char USI_general_byte;
 
-void USI_TWI_Master_Initialise(void);
-unsigned char USI_TWI_Start_Random_Read(unsigned char *, unsigned char);
-unsigned char USI_TWI_Start_Read_Write(unsigned char *, unsigned char);
-unsigned char USI_TWI_Master_Stop(void);
-unsigned char USI_TWI_Get_State_Info(void);
-unsigned char USI_TWI_Start_Transceiver_With_Data(unsigned char *, unsigned char);
-unsigned char USI_TWI_Master_Transfer(unsigned char);
-unsigned char USI_TWI_Master_Start(void);
+void USI_TWI_Master_Initialise();
+//unsigned char USI_TWI_Start_Random_Read(unsigned char *, unsigned char);
+//unsigned char USI_TWI_Start_Read_Write(unsigned char *, unsigned char);
+unsigned char USI_TWI_Master_Start();
+void USI_TWI_Master_Stop();
+//unsigned char USI_TWI_Get_State_Info(void);
+void USI_TWI_Transfer_byte(unsigned char);
+void USI_TWI_Start_Transceiver_With_Data(unsigned char *, unsigned char);
+
+
