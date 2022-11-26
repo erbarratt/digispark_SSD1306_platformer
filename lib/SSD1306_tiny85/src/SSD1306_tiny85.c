@@ -1,5 +1,4 @@
 #include "SSD1306_tiny85.h"
-//#include <stdlib.h>
 
 const unsigned char digital_font5x7[] PROGMEM =
 {
@@ -226,7 +225,7 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	}
 
-	void OLED_defineMemAddressArea(unsigned char col, unsigned char row, unsigned char width, unsigned char height){
+	void OLED_defineMemAddressArea(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2){
 
 		// command mode
 		// 0x80 = 0b10000000
@@ -241,15 +240,15 @@ const unsigned char digital_font5x7[] PROGMEM =
 		OLED_addToUSIBuffer(SSD1306_Command_Mode);            	// command mode
 		OLED_addToUSIBuffer(Set_Column_Address_Cmd);
 		OLED_addToUSIBuffer(0);
-		OLED_addToUSIBuffer(col);
-		OLED_addToUSIBuffer(col + width - 1);
+		OLED_addToUSIBuffer(x1);
+		OLED_addToUSIBuffer(x2);
 		OLED_xmitBuffer(0);                    					// send current buffer but don't stop
 
 		OLED_addToUSIBuffer(SSD1306_Command_Mode);            	// command mode
 		OLED_addToUSIBuffer(Set_Page_Address_Cmd);
 		OLED_addToUSIBuffer(0);
-		OLED_addToUSIBuffer(row);
-		OLED_addToUSIBuffer(row + height - 1);
+		OLED_addToUSIBuffer(y1);
+		OLED_addToUSIBuffer(y2);
 		OLED_xmitBuffer(1);                    					// stop I2C transmission
 
 	}
@@ -263,7 +262,7 @@ const unsigned char digital_font5x7[] PROGMEM =
 		//OLED_addCommand(0x40 | 0x0);   // line #0
 
 		//move cursor to 0,0??
-		OLED_defineMemAddressArea(0, 0, 128, 8);
+		OLED_defineMemAddressArea(0, 0, 127, 7);
 
 		//there's 8192 px
 		//that's 1024 bytes
@@ -295,7 +294,7 @@ const unsigned char digital_font5x7[] PROGMEM =
 	}
 
 	void OLED_clearBlue(){
-		OLED_defineMemAddressArea(0, 2, 128, 6);
+		OLED_defineMemAddressArea(0, 2, 127, 7);
 		for (unsigned char i=0; i<= 24; i++){
 			OLED_addToUSIBuffer(SSD1306_Data_Mode);            			// data mode
 			for (unsigned char k=0;k<=32;k++){
@@ -337,10 +336,10 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	}
 
-	void OLED_printString( char * pText ){
-
-		for (unsigned char i=0; pText[i] != '\0'; i++){
-			OLED_printChar(pText[i]);
-		}
-
-	}
+	//void OLED_printString( char * pText ){
+	//
+	//	for (unsigned char i=0; pText[i] != '\0'; i++){
+	//		OLED_printChar(pText[i]);
+	//	}
+	//
+	//}

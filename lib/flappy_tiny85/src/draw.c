@@ -4,7 +4,7 @@ void DRAW_init(){
 	_delay_ms(50);
 	OLED_init();   // init OLED display
 	OLED_clear();
-	OLED_defineMemAddressArea(0, 0, 128, 8);
+	OLED_defineMemAddressArea(0, 0, 127, 1);
 
 	//FLPPY BRD
 	unsigned char flppyBrd[] = {
@@ -46,7 +46,7 @@ void DRAW_lower(){
 	//walls
 		for(unsigned char i = 0; i < WALL_AMOUNT; i++){
 
-			OLED_defineMemAddressArea(walls[i].x, 2, 1, 6);
+			OLED_defineMemAddressArea(walls[i].x, 2, walls[i].x, 7);
 			OLED_addToUSIBuffer(SSD1306_Data_Mode);            		// data mode
 			for(unsigned char k = 0; k < walls[i].topRows; k++){
 				OLED_addToUSIBuffer(0xff);
@@ -76,8 +76,11 @@ void DRAW_lower(){
 		if(bird.updateScore == 1){
 			char c[4];
 			itoa(bird.score, c, 10);
-			OLED_defineMemAddressArea(90, 0, 128-90, 8);
-			OLED_printString(c);
+			OLED_defineMemAddressArea(90, 0, 127, 1);
+			//OLED_printString(c);
+			for (unsigned char i=0; c[i] != '\0'; i++){
+				OLED_printChar(c[i]);
+			}
 			bird.updateScore = 0;
 		}
 
