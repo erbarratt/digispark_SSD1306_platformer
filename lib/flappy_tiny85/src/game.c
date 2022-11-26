@@ -25,7 +25,7 @@ void GAME_init(){
 void GAME_moveBird(unsigned char button){
 
 	if(button){
-		bird.speed = -3;
+		bird.speed = -1;
 	} else {
 		bird.speed++;
 		if(bird.speed > 3){
