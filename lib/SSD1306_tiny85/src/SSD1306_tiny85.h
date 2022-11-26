@@ -86,6 +86,6 @@
 	void OLED_clearBlue();
 	void OLED_defineMemAddressArea(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2);
 	void OLED_printChar( unsigned char ch );
-	//void OLED_printString( char * pText );
+	void OLED_printString( char * pText );
 
 #endif //DIGISPARK_ATT85_SSD1306_TINY85_H
