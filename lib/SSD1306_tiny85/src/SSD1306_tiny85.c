@@ -137,12 +137,21 @@ const unsigned char digital_font5x7[] PROGMEM =
 		// try to Send a START condition on the TWI bus.
 			USI_TWI_Master_Start();
 
-		USI_TWI_Start_Transceiver_With_Data( USI_Buf, USI_BufIdx); 				// core func that does the work
-		USI_BufIdx = 1;															//reset index back to 1, as 0 is always address set in init()
+		//for some reason, local vars produce smaller ROM size...
+			unsigned char *msg = USI_Buf;
+			unsigned char msgSize = USI_BufIdx;
+			while(msgSize > 0) // Until all data sent/received.
+			{
 
-		if(stop){
-			USI_TWI_Master_Stop();
-		}
+				USI_TWI_Transfer_byte(*(msg++));            // Send 8 bits on USIDR on the bus.
+				msgSize--;
+
+			}                // core func that does the work
+			USI_BufIdx = 1;															//reset index back to 1, as 0 is always address set in init()
+
+			if(stop){
+				USI_TWI_Master_Stop();
+			}
 
 	}
 
@@ -184,8 +193,6 @@ const unsigned char digital_font5x7[] PROGMEM =
 			Charge_Pump_Enable_Cmd,
 			SSD1306_Display_On_Cmd											//display ON
 		};
-
-		//CommandMode = 1;
 
 		for(unsigned char i = 0; i < 28; i++){
 			OLED_addToUSIBuffer(SSD1306_Command_Mode);
@@ -230,41 +237,16 @@ const unsigned char digital_font5x7[] PROGMEM =
 
 	void OLED_clear() {
 
-		//no idea what these do....
-		//these are only for page address mode...
-		//OLED_addCommand(0x00 | 0x0);   // low col = 0
-		//OLED_addCommand(0x10 | 0x0);   // hi col = 0
-		//OLED_addCommand(0x40 | 0x0);   // line #0
-
 		//move cursor to 0,0??
 		OLED_defineMemAddressArea(0, 0, 127, 7);
 
-		//there's 8192 px
-		//that's 1024 bytes
-		//which is 32x32
-
-		//seems like you don't need to reset cursor to clear -
-		//i.e. writing overflows back to beginning, so as long as
-		//1024 bytes written, screen will fill.
-
-		//int x = 0;
-
 		for (unsigned char i=0; i<= 32; i++){
-		//for (unsigned char i=0; i<= (unsigned char)((128*64/8)/16); i++){
 			OLED_addToUSIBuffer(SSD1306_Data_Mode);            			// data mode
 			for (unsigned char k=0;k<=32;k++){
-			//for (unsigned char k=0;k<16;k++){
 				OLED_addToUSIBuffer(0x00);
-				//x++;
 			}
 			OLED_xmitBuffer(1);
 		}
-
-		//char txt[5];
-		//itoa(x, txt, 10);
-		//
-		//OLED_defineMemAddressArea(0, 0, 128, 8);
-		//OLED_printString(txt);
 
 	}
 

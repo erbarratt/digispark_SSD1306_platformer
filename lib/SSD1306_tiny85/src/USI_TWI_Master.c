@@ -64,11 +64,6 @@
 		PORT_USI &= ~(1 << PIN_USI_SCL); 					// Pull SCL LOW.
 		PORT_USI |= (1 << PIN_USI_SDA);  					// Release SDA.
 
-		//if(!(USISR & (1 << USISIF))){
-		//	USI_TWI_state.errorState = USI_TWI_MISSING_START_CON;
-		//	return (0);
-		//}
-
 		return (1);
 	}
 
@@ -101,14 +96,6 @@
 		PORT_USI |= (1 << PIN_USI_SDA); // Release SDA.
 		//_delay_us(T2_TWI);
 
-		//NOTE WITHOUT DELAYS THIS SIGNAL VERIFY DOES NOT WORK AND RETURNS 0
-		//ITS PROBABLY CHECKING TOO QUICKLY
-		//#ifdef SIGNAL_VERIFY
-		//	if(!(USISR & (1 << USIPF))){
-		//		USI_TWI_state.errorState = USI_TWI_MISSING_STOP_CON;
-		//		return (0);
-		//	}
-		//#endif
 	}
 
 /**
@@ -143,13 +130,6 @@
 		(1 << USIDC) |    // Prepare register value to: Clear flags, and
 		(0x0 << USICNT0); // set USI to shift 8 bits i.e. count 16 clock edges.
 
-		// Prepare clocking.
-		//USI_general_byte = (0 << USISIE) | (0 << USIOIE) | 				// Interrupts disabled
-		//	(1 << USIWM1) | (0 << USIWM0) | 							// Set USI in Two-wire mode.
-		//	(1 << USICS1) | (0 << USICS0) |
-		//	(1 << USICLK) | 											// Software clock strobe as source.
-		//	(1 << USITC);   											// Toggle Clock Port.
-
 		//at this point the SCL is low
 		//toggle clock back and forth until USIOIF flag reads high - 1 byte of data is thusly transferred.
 
@@ -159,14 +139,6 @@
 			PORT_USI &= ~(1 << PIN_USI_SCL); 							// Pull SCL LOW.
 		}
 
-		//do{
-		//	//_delay_us(T2_TWI);
-		//	USICR = USI_general_byte; 									// Generate positve SCL edge.
-		//	while(!(PIN_USI & (1 << PIN_USI_SCL))){} 					// Wait for SCL to go high.
-		//	//_delay_us(T4_TWI);
-		//	USICR = USI_general_byte;                     				// Generate negative SCL edge.
-		//
-		//} while(!(USISR & (1 << USIOIF))); 							// Check for transfer complete. i.e. when the USIOIF flag bit = 1, 1 byte has transfered
 
 		//_delay_us(T2_TWI);
 		//USI_general_byte = USIDR;                  					// Read out data.
@@ -178,39 +150,5 @@
 		while(!(PIN_USI & (1 << PIN_USI_SCL))){} 						// Wait for SCL to go high.
 		PORT_USI &= ~(1 << PIN_USI_SCL); 								// Pull SCL LOW.
 
-		//return USI_general_byte; // Return the data from the USIDR
 	}
 
-/**
- * @brief USI Transmit and receive function. LSB of first byte in buffer
- * indicates if a read or write cycles is performed. If set a read
- * operation is performed.
- *
- * Function generates (Repeated) Start Condition, sends address and
- * R/W, Reads/Writes Data, and verifies/sends ACK.
- *
- * This function also handles Random Read function if the memReadMode
- * bit is set. In that case, the function will:
- * The address in memory will be the second
- * byte and is written *without* sending a STOP.
- * Then the Read bit is set (lsb of first byte), the byte count is
- * adjusted (if needed), and the function function starts over by sending
- * the slave address again and reading the data.
- *
- * Success or error code is returned. Error codes are defined in
- * USI_TWI_Master.h
- * @param msg Pointer to the location of the msg buffer
- * @param msgSize How much data to send from the buffer
- */
-	void USI_TWI_Start_Transceiver_With_Data(unsigned char *msg, unsigned char msgSize)
-	{
-
-		while(msgSize > 0) // Until all data sent/received.
-		{
-
-			USI_TWI_Transfer_byte(*(msg++)); 			// Send 8 bits on USIDR on the bus.
-			msgSize--;
-
-		}
-
-	}
