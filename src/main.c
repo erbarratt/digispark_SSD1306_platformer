@@ -1,15 +1,15 @@
 #define F_CPU 16000000UL
-//#include <util/delay.h>
+#include <util/delay.h>
 #include "../lib/SSD1306_tiny85/src/SSD1306_tiny85.h"
 #include "../lib/Game/src/draw.h"
 #include "../lib/Game/src/game.h"
 
-#define LEFT_BUTTON_PIN 3
+#define LEFT_BUTTON_PIN 1
 #define RIGHT_BUTTON_PIN 4
 
 int main() {
 
-	DDRB &= ~(1 << DDB3); 			//set Pin 3 as input (0) for the left button
+	DDRB &= ~(1 << DDB1); 			//set Pin 3 as input (0) for the left button
 	DDRB &= ~(1 << DDB4); 			//set Pin 4 as input (0) for the right button
 
 	OLED_init();
@@ -18,9 +18,10 @@ int main() {
 
 	DRAW_bg();
 
-	GAME_movePlayer(PINB & (1 << LEFT_BUTTON_PIN));
-
 	while(1){
+		_delay_ms(33);
+		DRAW_clearPlayer();
+		GAME_movePlayer(PINB & (1 << LEFT_BUTTON_PIN), PINB & (1 << RIGHT_BUTTON_PIN));
 		DRAW_player();
 	}
 

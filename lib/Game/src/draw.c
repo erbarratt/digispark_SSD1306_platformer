@@ -48,12 +48,84 @@
 
 	}
 
+	void DRAW_clearPlayer()
+	{
+		unsigned char offsetY = playerObj.y % 8;
+
+		OLED_defineMemAddressArea(playerObj.x, (playerObj.y/8)+2, playerObj.x+7, 7);
+
+		if(offsetY){
+
+			CommandMode = 0;
+			OLED_addToUSIBuffer(SSD1306_Data_Mode);
+			for(unsigned char i = 0; i < 16; i++){
+				OLED_addToUSIBuffer(0x00);
+			}
+			OLED_xmitBuffer(1);
+
+		} else {
+
+			CommandMode = 0;
+			OLED_addToUSIBuffer(SSD1306_Data_Mode);
+			for(unsigned char i = 0; i < 8; i++){
+				OLED_addToUSIBuffer(0x00);
+			}
+			OLED_xmitBuffer(1);
+
+		}
+	}
+
 	void DRAW_player()
 	{
-		OLED_defineMemAddressArea(playerObj.x, (playerObj.y/8)+2, 127, 7);
 
-		CommandMode = 0;
-		OLED_addToUSIBuffer(SSD1306_Data_Mode);
-		OLED_addToUSIBuffer(0xff);
-		OLED_xmitBuffer(1);
+		unsigned char offsetY = playerObj.y % 8;
+
+		OLED_defineMemAddressArea(playerObj.x, (playerObj.y/8)+2, playerObj.x+7, 7);
+
+		if(offsetY){
+
+			unsigned char sideTop = 0b01111110 << offsetY;
+			unsigned char sideBottom = 0b01111110 >> (8-offsetY);
+			unsigned char midTop = 0b11111111 << offsetY;
+			unsigned char midBottom = 0b11111111 >> (8-offsetY);
+
+			CommandMode = 0;
+			OLED_addToUSIBuffer(SSD1306_Data_Mode);
+			OLED_addToUSIBuffer(sideTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(midTop);
+			OLED_addToUSIBuffer(sideTop);
+
+			OLED_addToUSIBuffer(sideBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(midBottom);
+			OLED_addToUSIBuffer(sideBottom);
+
+			OLED_xmitBuffer(1);
+
+		} else {
+
+			CommandMode = 0;
+			OLED_addToUSIBuffer(SSD1306_Data_Mode);
+			OLED_addToUSIBuffer(0b01111110);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0xff);
+			OLED_addToUSIBuffer(0b01111110);
+			OLED_xmitBuffer(1);
+
+		}
+
+
 	}

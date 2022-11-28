@@ -6,10 +6,10 @@
 	extern const unsigned char screen_1_collision[];
 
 	struct player_t {
-		unsigned char x;
+		char x;
 		unsigned char y;
-		unsigned char speedX;
-		unsigned char speedY;
+		char speedX;
+		char speedY;
 		unsigned char onGround :1;
 		unsigned char onWall : 1;
 		unsigned char unused : 6;
@@ -25,6 +25,6 @@
 	} screen_t;
 
 	void GAME_init();
-	void GAME_movePlayer(unsigned char button);
+	void GAME_movePlayer(unsigned char left, unsigned char right);
 
 #endif
