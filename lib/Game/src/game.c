@@ -12,7 +12,7 @@ const unsigned char screen_1_collision[] =
 	0b00000000, 0b00000000,
 	0b00000000, 0b00000000,
 	0b00000000, 0b01000000,
-	0b11111111, 0b11110111
+	0b11111111, 0b11110011
 };
 
 const unsigned char bitIndexLookup[] = {
@@ -42,39 +42,46 @@ void GAME_init()
 
 void GAME_movePlayer(unsigned char left, unsigned char right){
 
-	if(left && right ){
+	//jump if on ground
+		if(left && right ){
 
-		if(playerObj.onGround){
-			//jump
-			playerObj.speedY = -6;
-			playerObj.onGround = 0;
-		}
+			if(playerObj.onGround){
+				//jump
+				playerObj.speedY = -6;
+				playerObj.onGround = 0;
+			}
 
-	} else if(left){
-		playerObj.speedX--;
-		if(playerObj.speedX < -3){
-			playerObj.speedX = -3;
-		}
-	} else if(right){
-		playerObj.speedX++;
-		if(playerObj.speedX > 3){
-			playerObj.speedX = 3;
-		}
-	} else {
-		if(playerObj.speedX > 0){
+	//move left
+		} else if(left){
 			playerObj.speedX--;
-		} else if(playerObj.speedX < 0){
+			if(playerObj.speedX < -3){
+				playerObj.speedX = -3;
+			}
+	//move right
+		} else if(right){
 			playerObj.speedX++;
+			if(playerObj.speedX > 3){
+				playerObj.speedX = 3;
+			}
+
+	//slow down
+		} else {
+			if(playerObj.speedX > 0){
+				playerObj.speedX--;
+			} else if(playerObj.speedX < 0){
+				playerObj.speedX++;
+			}
 		}
-	}
 
 	playerObj.x += playerObj.speedX;
 
 	//limit x
 		if(playerObj.x < 0){
 			playerObj.x = 0;
+			playerObj.speedX = 0;
 		} else if(playerObj.x > 119){
 			playerObj.x = 119;
+			playerObj.speedX = 0;
 		}
 
 	//gravity
@@ -104,17 +111,32 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 			playerObj.tileBitIndex = playerObj.x / 8;
 		}
 
-		char c[4];
-		itoa(12%8, c, 10);
-		OLED_defineMemAddressArea(0, 1, 127, 7);
-		OLED_printString(c);
+		//char c[4];
+		//itoa(12%8, c, 10);
+		//OLED_defineMemAddressArea(0, 1, 127, 7);
+		//OLED_printString(c);
 
-	//check collisions
-		if(playerObj.speedY > 0){
+	//floor
+		{
+			unsigned char colByteIndex = playerObj.tileByteIndex+2;
 
-				unsigned char colByteIndex = playerObj.tileByteIndex+2;
+			unsigned char nextBitIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex+1;
+			char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
+			unsigned char nextColByteIndex = colByteIndex + nextByte;
 
-				if(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]){
+			if(playerObj.speedY >= 0 && !playerObj.onGround){
+
+				if(
+					(
+						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) && 			//tile directly below free
+						playerObj.x % 8 == 0
+					)||
+					(
+						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) ||
+						(screen_1_collision[nextColByteIndex] & bitIndexLookup[nextBitIndex])
+
+					) //tile directly below + 1 blocked, if x % 8 != 0
+				){
 
 					playerObj.y = (playerObj.y / 8) * 8 ; //revert to first bit vertically...
 					playerObj.speedY = 0;
@@ -122,27 +144,63 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 
 				}
 
+			} else if (playerObj.onGround) {
+
+				if(
+					(
+						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) == 0 && 			//tile directly below free
+						playerObj.x % 8 == 0
+					)||
+					(
+						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) == 0 &&
+						(screen_1_collision[nextColByteIndex] & bitIndexLookup[nextBitIndex]) == 0
+
+					) //tile directly below + 1 blocked, if x % 8 != 0
+				){
+
+					playerObj.onGround = 0;
+
+				}
+
+			}
 		}
 
-		if(playerObj.speedX != 0){
+	//collisions to right
+		if(playerObj.speedX > 0){
+
 
 			char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
 			char nextByteIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex + 1;
 
-			if(playerObj.speedX < 0){
-				nextByte = (playerObj.tileBitIndex == 0) ? -1 : 0;
-				nextByteIndex = (playerObj.tileBitIndex == 0) ? 7 : playerObj.tileBitIndex - 1;
-			}
-
 			unsigned char colByteIndex = playerObj.tileByteIndex + nextByte;
 
-			if(screen_1_collision[colByteIndex] & bitIndexLookup[nextByteIndex]){
+			if(
+				screen_1_collision[colByteIndex] & bitIndexLookup[nextByteIndex]
+			){
 
-				playerObj.x = (playerObj.x / 8) * 8 ; //revert to first bit vertically...
+				playerObj.x = (playerObj.x / 8) * 8 ; //revert to first bit of previous tile
 				playerObj.speedX = 0;
 
 			}
 
 		}
 
+	//collisions to left
+		else if(playerObj.speedX < 0){
+
+			if(screen_1_collision[playerObj.tileByteIndex] & bitIndexLookup[playerObj.tileBitIndex]){
+
+				playerObj.x = (playerObj.x / 8) * 9 ; //revert to first bit of previous tile
+				playerObj.speedX = 0;
+
+				if(playerObj.tileBitIndex == 7){
+					playerObj.tileBitIndex = 0;
+					playerObj.tileByteIndex++;
+				} else {
+					playerObj.tileBitIndex++;
+				}
+
+			}
+
+		}
 }
