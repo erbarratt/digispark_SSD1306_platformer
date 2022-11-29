@@ -2,6 +2,10 @@
 #include "game.h"
 #include "../../SSD1306_tiny85/src/SSD1306_tiny85.h"
 
+/**
+* Draw the background tiles
+* @return void
+*/
 	void DRAW_bg()
 	{
 
@@ -48,73 +52,66 @@
 
 	}
 
+/**
+* clear the player 8x8 px tile, anywhere on screen
+* @return void
+*/
 	void DRAW_clearPlayer()
 	{
-		unsigned char offsetY = playerObj.y % 8;
-
+		unsigned char clearBytes = (playerObj.y % 8 != 0) ? 16 : 8;
 		OLED_defineMemAddressArea(playerObj.x, (playerObj.y/8)+2, playerObj.x+7, 7);
-
-		if(offsetY){
-
-			CommandMode = 0;
-			OLED_addToUSIBuffer(SSD1306_Data_Mode);
-			for(unsigned char i = 0; i < 16; i++){
-				OLED_addToUSIBuffer(0x00);
-			}
-			OLED_xmitBuffer(1);
-
-		} else {
-
-			CommandMode = 0;
-			OLED_addToUSIBuffer(SSD1306_Data_Mode);
-			for(unsigned char i = 0; i < 8; i++){
-				OLED_addToUSIBuffer(0x00);
-			}
-			OLED_xmitBuffer(1);
-
+		CommandMode = 0;
+		OLED_addToUSIBuffer(SSD1306_Data_Mode);
+		for(unsigned char i = 0; i < clearBytes; i++){
+			OLED_addToUSIBuffer(0x00);
 		}
+		OLED_xmitBuffer(1);
 	}
 
+/**
+* Draw the player 8x8 px tile, anywhere on screen
+* @return void
+*/
 	void DRAW_player()
 	{
 
+		//the player position might mean we need to draw across 2 rows
+
 		unsigned char offsetY = playerObj.y % 8;
 
 		OLED_defineMemAddressArea(playerObj.x, (playerObj.y/8)+2, playerObj.x+7, 7);
 
+		CommandMode = 0;
+		OLED_addToUSIBuffer(SSD1306_Data_Mode);
+
 		if(offsetY){
 
-			unsigned char sideTop = 0b01111110 << offsetY;
-			unsigned char sideBottom = 0b01111110 >> (8-offsetY);
-			unsigned char midTop = 0b11111111 << offsetY;
-			unsigned char midBottom = 0b11111111 >> (8-offsetY);
+			//instead of doing lots of bitshifts, do 4 here, 2 each for the upper and lower rows
+				unsigned char sideTop = 0b01111110 << offsetY;
+				unsigned char sideBottom = 0b01111110 >> (8-offsetY);
+				unsigned char midTop = 0b11111111 << offsetY;
+				unsigned char midBottom = 0b11111111 >> (8-offsetY);
 
-			CommandMode = 0;
-			OLED_addToUSIBuffer(SSD1306_Data_Mode);
-			OLED_addToUSIBuffer(sideTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(midTop);
-			OLED_addToUSIBuffer(sideTop);
+				OLED_addToUSIBuffer(sideTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(midTop);
+				OLED_addToUSIBuffer(sideTop);
 
-			OLED_addToUSIBuffer(sideBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(midBottom);
-			OLED_addToUSIBuffer(sideBottom);
-
-			OLED_xmitBuffer(1);
+				OLED_addToUSIBuffer(sideBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(midBottom);
+				OLED_addToUSIBuffer(sideBottom);
 
 		} else {
 
-			CommandMode = 0;
-			OLED_addToUSIBuffer(SSD1306_Data_Mode);
 			OLED_addToUSIBuffer(0b01111110);
 			OLED_addToUSIBuffer(0xff);
 			OLED_addToUSIBuffer(0xff);
@@ -123,9 +120,9 @@
 			OLED_addToUSIBuffer(0xff);
 			OLED_addToUSIBuffer(0xff);
 			OLED_addToUSIBuffer(0b01111110);
-			OLED_xmitBuffer(1);
 
 		}
 
+		OLED_xmitBuffer(1);
 
 	}

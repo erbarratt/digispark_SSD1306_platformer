@@ -73,7 +73,8 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 			}
 		}
 
-	playerObj.x += playerObj.speedX;
+	//perform x movement
+		playerObj.x += playerObj.speedX;
 
 	//limit x
 		if(playerObj.x < 0){
@@ -176,6 +177,7 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 
 			if(
 				screen_1_collision[colByteIndex] & bitIndexLookup[nextByteIndex]
+				//also need to check tile below to stop jump / fall clips
 			){
 
 				playerObj.x = (playerObj.x / 8) * 8 ; //revert to first bit of previous tile

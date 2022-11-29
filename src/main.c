@@ -13,9 +13,9 @@ int main() {
 	DDRB &= ~(1 << DDB4); 			//set Pin 4 as input (0) for the right button
 
 	OLED_init();
-
 	OLED_clear();
 
+	GAME_init();
 	DRAW_bg();
 
 	while(1){
