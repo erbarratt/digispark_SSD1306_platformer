@@ -7,7 +7,7 @@
 
 	struct player_t {
 		char x;
-		unsigned char y;
+		char y;
 		char speedX;
 		char speedY;
 		unsigned char onGround :1;

@@ -1,6 +1,6 @@
 #include "game.h"
-#include <stdlib.h>
-#include "../../SSD1306_tiny85/src/SSD1306_tiny85.h"
+//#include <stdlib.h>
+//#include "../../SSD1306_tiny85/src/SSD1306_tiny85.h"
 
 struct player_t playerObj;
 
@@ -9,7 +9,7 @@ const unsigned char screen_1_collision[] =
 {
 	0b00000000, 0b00000000,
 	0b00000000, 0b00000000,
-	0b00000000, 0b00000000,
+	0b00000001, 0b00000000,
 	0b00000000, 0b00000000,
 	0b00000000, 0b01000000,
 	0b11111111, 0b11110011
@@ -57,6 +57,7 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 			if(playerObj.speedX < -3){
 				playerObj.speedX = -3;
 			}
+
 	//move right
 		} else if(right){
 			playerObj.speedX++;
@@ -79,7 +80,7 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 	//limit x
 		if(playerObj.x < 0){
 			playerObj.x = 0;
-			playerObj.speedX = 0;
+			playerObj.speedX = 0;						//speed 0 stops collision checking below
 		} else if(playerObj.x > 119){
 			playerObj.x = 119;
 			playerObj.speedX = 0;
@@ -93,14 +94,21 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 				playerObj.speedY = 3;
 			}
 
-			//attempt to make the move
-				playerObj.y += playerObj.speedY;
-
 		}
 
-	//set player tile index
-	//54
-	//	playerObj.tileIndex = (playerObj.x / 8) + (playerObj.y * 2);
+	//attempt to make the move
+		playerObj.y += playerObj.speedY;
+
+	//limit y
+		if(playerObj.y < 0){
+			playerObj.y = 0;
+			playerObj.speedY = 0;
+			playerObj.onGround = 0;
+		} else if(playerObj.y > 40){
+			playerObj.y = 40;
+			playerObj.speedY = 0;			//speed 0 stops collision checking below
+			playerObj.onGround = 1;
+		}
 
 	//set player tile byte index
 		playerObj.tileByteIndex = (playerObj.x / 64) + ((playerObj.y / 8) *2);
@@ -113,14 +121,14 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 		}
 
 		//char c[4];
-		//itoa(12%8, c, 10);
+		//itoa(playerObj.x, c, 10);
 		//OLED_defineMemAddressArea(0, 1, 127, 7);
 		//OLED_printString(c);
 
-	//floor
+	//floor + walking of edge
 		{
-			unsigned char colByteIndex = playerObj.tileByteIndex+2;
 
+			unsigned char colByteIndex = playerObj.tileByteIndex+2;
 			unsigned char nextBitIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex+1;
 			char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
 			unsigned char nextColByteIndex = colByteIndex + nextByte;
@@ -129,14 +137,14 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 
 				if(
 					(
-						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) && 			//tile directly below free
+						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) && 					//tile directly below blocked
 						playerObj.x % 8 == 0
 					)||
 					(
 						(screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) ||
 						(screen_1_collision[nextColByteIndex] & bitIndexLookup[nextBitIndex])
 
-					) //tile directly below + 1 blocked, if x % 8 != 0
+					) 																									//tile directly below + 1 blocked, if x % 8 != 0
 				){
 
 					playerObj.y = (playerObj.y / 8) * 8 ; //revert to first bit vertically...
@@ -166,17 +174,56 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 			}
 		}
 
+	//cieling
+		if(playerObj.speedY < 0 && !playerObj.onGround){
+
+			unsigned char nextBitIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex+1;
+			char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
+			unsigned char nextColByteIndex = playerObj.tileByteIndex + nextByte;
+
+			if(
+				(
+					(screen_1_collision[playerObj.tileByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) && 					//tile directly above blocked
+					playerObj.x % 8 == 0
+				)||
+				(
+					(screen_1_collision[playerObj.tileByteIndex] & bitIndexLookup[playerObj.tileBitIndex]) ||
+					(screen_1_collision[nextColByteIndex] & bitIndexLookup[nextBitIndex])
+
+				) 																									//tile directly above + 1 blocked, if x % 8 != 0
+			){
+
+				playerObj.y = ((playerObj.y / 8) * 8) + 8 ; //revert to first bit vertically...
+				playerObj.speedY = 0;
+
+			}
+
+		}
+
 	//collisions to right
 		if(playerObj.speedX > 0){
 
+			//tile 1 to right
+				unsigned char nextBitIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex + 1;
+				unsigned char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
+				unsigned char colByteIndex = playerObj.tileByteIndex + nextByte;
 
-			char nextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
-			char nextByteIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex + 1;
-
-			unsigned char colByteIndex = playerObj.tileByteIndex + nextByte;
+			//tile 1 to right and 1 below
+				unsigned char nextNextBitIndex = (playerObj.tileBitIndex == 7) ? 0 : playerObj.tileBitIndex + 1;
+				unsigned char nextNextByte = (playerObj.tileBitIndex == 7) ? 1 : 0;
+				unsigned char nextColByteIndex = playerObj.tileByteIndex + 2 + nextNextByte;
 
 			if(
-				screen_1_collision[colByteIndex] & bitIndexLookup[nextByteIndex]
+				(
+					screen_1_collision[colByteIndex] & bitIndexLookup[nextBitIndex] &&					//if on ground, then only check tile to right
+					playerObj.onGround) ||
+				(
+					playerObj.onGround == 0 &&															//if not on ground, i.e. between 2 tiles vertically, then check both.
+					(
+						screen_1_collision[colByteIndex] & bitIndexLookup[nextBitIndex] ||
+						screen_1_collision[nextColByteIndex] & bitIndexLookup[nextNextBitIndex]
+					)
+				)
 				//also need to check tile below to stop jump / fall clips
 			){
 
@@ -190,9 +237,19 @@ void GAME_movePlayer(unsigned char left, unsigned char right){
 	//collisions to left
 		else if(playerObj.speedX < 0){
 
-			if(screen_1_collision[playerObj.tileByteIndex] & bitIndexLookup[playerObj.tileBitIndex]){
+			//tile 1 to left and 1 to below
+				unsigned char colByteIndex = playerObj.tileByteIndex + 2;
 
-				playerObj.x = (playerObj.x / 8) * 9 ; //revert to first bit of previous tile
+			if(
+				screen_1_collision[playerObj.tileByteIndex] & bitIndexLookup[playerObj.tileBitIndex] 	//tile we moved into is blocked, ever
+				||
+				(
+					screen_1_collision[colByteIndex] & bitIndexLookup[playerObj.tileBitIndex] &&		//when jumping, we also need to check tile below tile we're in.
+					playerObj.onGround == 0
+				)
+			){
+
+				playerObj.x = ((playerObj.x / 8) * 8) + 8 ; //revert to first bit of previous tile
 				playerObj.speedX = 0;
 
 				if(playerObj.tileBitIndex == 7){

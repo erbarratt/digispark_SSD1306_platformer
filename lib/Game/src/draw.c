@@ -9,8 +9,8 @@
 	void DRAW_bg()
 	{
 
-		OLED_defineMemAddressArea(0,0,127,0);
-		OLED_printString("PLATFORMER");
+		//OLED_defineMemAddressArea(0,0,127,0);
+		//OLED_printString("PLATFORMER");
 
 		//clear all of the blue rows
 			OLED_clearBlue();
